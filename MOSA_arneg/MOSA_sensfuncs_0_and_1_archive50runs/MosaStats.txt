@@ -1,0 +1,979 @@
+--------------------------------------------
+System information:
+--------------------------------------------
+Circuit choice: arneg
+Number of steady states expected: 1
+Sensitivity function 1: |S_alpha_xss|
+Sensitivity function 2: |S_n_xss|
+--------------------------------------------
+System probing to estimate MOSA run parameters:
+--------------------------------------------
+alpha values from 0.01 to 50.0 with 100 linspaced samples
+n values from 0.01 to 10.0 with 100 linspaced samples
+Min sampled value of |S_alpha_xss|: 0.09332423670913763
+Min sampled value of |S_n_xss|: 7.321685217996128e-05
+Max sampled value of |S_alpha_xss|: 0.9950582938719946
+Max sampled value of |S_n_xss|: 0.8896292214739835
+Sampled energy difference in |S_alpha_xss|: 0.901734057162857
+Sampled energy difference in |S_n_xss|: 0.8895560046218035
+Sampled cumulative energy difference: 1.2666626209082246
+Chosen probability of transitioning to a higher energy state in hot run: 0.95
+Corresponding hot run tempertaure: 24.694507070219675
+(This temperature will be used to start the inital anneal.)Chosen probability of transitioning to a higher energy state in cold run: 0.01
+Corresponding cold run tempertaure: 0.2750522933467762
+(This temperature will be used to estimate when to end hot run. The actual finishing temperature from the hot run will used for the cold run.)
+--------------------------------------------
+MOSA run parameters:
+--------------------------------------------
+Chosen number of MOSA runs: 50
+Chosen number of random walks per run: 500
+
+MOSA RUN NUMBER 1:
+
+Random seed value for 1: 0.5488135039273248
+
+HOT RUN NO. 1:
+Hot run time: 4.186879396438599 seconds
+Hot run stopping temperature = cold run starting temperature: 4.1013473001279745
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 1:
+Cold run time: 3.9282031059265137 seconds
+Cold run stopping temperature: 0.11407011191338352
+
+PRUNE NO. 1:
+Prune time: 0.00012183189392089844 seconds
+Archive length after cold run: 62
+Archive length after prune: 21
+
+MOSA RUN NUMBER 2:
+
+Random seed value for 2: 0.417022004702574
+
+HOT RUN NO. 2:
+Hot run time: 9.101810455322266 seconds
+Hot run stopping temperature = cold run starting temperature: 1.6291138725807868
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 2:
+Cold run time: 3.4326586723327637 seconds
+Cold run stopping temperature: 0.2200691273060657
+
+PRUNE NO. 2:
+Prune time: 0.18509364128112793 seconds
+Archive length after cold run: 1244
+Archive length after prune: 1195
+
+MOSA RUN NUMBER 3:
+
+Random seed value for 3: 0.43599490214200376
+
+HOT RUN NO. 3:
+Hot run time: 9.372435331344604 seconds
+Hot run stopping temperature = cold run starting temperature: 1.0267480565682128
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 3:
+Cold run time: 12.780450105667114 seconds
+Cold run stopping temperature: 3.0302071875070666e-05
+
+PRUNE NO. 3:
+Prune time: 0.07028722763061523 seconds
+Archive length after cold run: 1090
+Archive length after prune: 396
+
+MOSA RUN NUMBER 4:
+
+Random seed value for 4: 0.5507979025745755
+
+HOT RUN NO. 4:
+Hot run time: 3.4853429794311523 seconds
+Hot run stopping temperature = cold run starting temperature: 5.579366814454817
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 4:
+Cold run time: 2.2817108631134033 seconds
+Cold run stopping temperature: 0.7536897244833983
+
+PRUNE NO. 4:
+Prune time: 4.1961669921875e-05 seconds
+Archive length after cold run: 34
+Archive length after prune: 11
+
+MOSA RUN NUMBER 5:
+
+Random seed value for 5: 0.9670298390136767
+
+HOT RUN NO. 5:
+Hot run time: 3.888530969619751 seconds
+Hot run stopping temperature = cold run starting temperature: 4.7836096225431985
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 5:
+Cold run time: 2.4819679260253906 seconds
+Cold run stopping temperature: 0.6461947275289537
+
+PRUNE NO. 5:
+Prune time: 0.00043582916259765625 seconds
+Archive length after cold run: 112
+Archive length after prune: 26
+
+MOSA RUN NUMBER 6:
+
+Random seed value for 6: 0.22199317108973948
+
+HOT RUN NO. 6:
+Hot run time: 11.333029985427856 seconds
+Hot run stopping temperature = cold run starting temperature: 0.2848092051151289
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 6:
+Cold run time: 10.947601318359375 seconds
+Cold run stopping temperature: 8.405478782132975e-06
+
+PRUNE NO. 6:
+Prune time: 0.07118725776672363 seconds
+Archive length after cold run: 877
+Archive length after prune: 538
+
+MOSA RUN NUMBER 7:
+
+Random seed value for 7: 0.8928601514360016
+
+HOT RUN NO. 7:
+Hot run time: 11.242490768432617 seconds
+Hot run stopping temperature = cold run starting temperature: 0.2848092051151289
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 7:
+Cold run time: 10.911679983139038 seconds
+Cold run stopping temperature: 8.405478782132975e-06
+
+PRUNE NO. 7:
+Prune time: 0.0306088924407959 seconds
+Archive length after cold run: 907
+Archive length after prune: 346
+
+MOSA RUN NUMBER 8:
+
+Random seed value for 8: 0.07630828937395717
+
+HOT RUN NO. 8:
+Hot run time: 5.667729377746582 seconds
+Hot run stopping temperature = cold run starting temperature: 2.1053941673004664
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 8:
+Cold run time: 10.975664854049683 seconds
+Cold run stopping temperature: 6.213579365918656e-05
+
+PRUNE NO. 8:
+Prune time: 0.04579591751098633 seconds
+Archive length after cold run: 729
+Archive length after prune: 579
+
+MOSA RUN NUMBER 9:
+
+Random seed value for 9: 0.8734294027918162
+
+HOT RUN NO. 9:
+Hot run time: 2.6621603965759277 seconds
+Hot run stopping temperature = cold run starting temperature: 7.989501413806492
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 9:
+Cold run time: 2.3009278774261475 seconds
+Cold run stopping temperature: 1.0792631708191305
+
+PRUNE NO. 9:
+Prune time: 2.193450927734375e-05 seconds
+Archive length after cold run: 16
+Archive length after prune: 1
+
+MOSA RUN NUMBER 10:
+
+Random seed value for 10: 0.010374153885699955
+
+HOT RUN NO. 10:
+Hot run time: 8.227690696716309 seconds
+Hot run stopping temperature = cold run starting temperature: 0.6811656385136902
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 10:
+Cold run time: 10.884167909622192 seconds
+Cold run stopping temperature: 2.0103013592311542e-05
+
+PRUNE NO. 10:
+Prune time: 0.04613232612609863 seconds
+Archive length after cold run: 915
+Archive length after prune: 539
+
+MOSA RUN NUMBER 11:
+
+Random seed value for 11: 0.771320643266746
+
+HOT RUN NO. 11:
+Hot run time: 9.113228797912598 seconds
+Hot run stopping temperature = cold run starting temperature: 0.6471073565880057
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 11:
+Cold run time: 10.33899998664856 seconds
+Cold run stopping temperature: 1.9097862912695966e-05
+
+PRUNE NO. 11:
+Prune time: 0.00480961799621582 seconds
+Archive length after cold run: 528
+Archive length after prune: 132
+
+MOSA RUN NUMBER 12:
+
+Random seed value for 12: 0.1802696888767692
+
+HOT RUN NO. 12:
+Hot run time: 11.577419519424438 seconds
+Hot run stopping temperature = cold run starting temperature: 0.2848092051151289
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 12:
+Cold run time: 10.662450313568115 seconds
+Cold run stopping temperature: 8.405478782132975e-06
+
+PRUNE NO. 12:
+Prune time: 0.028302431106567383 seconds
+Archive length after cold run: 846
+Archive length after prune: 286
+
+MOSA RUN NUMBER 13:
+
+Random seed value for 13: 0.15416284237967237
+
+HOT RUN NO. 13:
+Hot run time: 2.900423288345337 seconds
+Hot run stopping temperature = cold run starting temperature: 6.849998774662342
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 13:
+Cold run time: 2.5080747604370117 seconds
+Cold run stopping temperature: 0.7495199414756522
+
+PRUNE NO. 13:
+Prune time: 5.1975250244140625e-05 seconds
+Archive length after cold run: 23
+Archive length after prune: 8
+
+MOSA RUN NUMBER 14:
+
+Random seed value for 14: 0.7777024105738202
+
+HOT RUN NO. 14:
+Hot run time: 9.959606170654297 seconds
+Hot run stopping temperature = cold run starting temperature: 0.42930424159793973
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 14:
+Cold run time: 2.53122615814209 seconds
+Cold run stopping temperature: 0.05799263721668784
+
+PRUNE NO. 14:
+Prune time: 0.0013759136199951172 seconds
+Archive length after cold run: 229
+Archive length after prune: 44
+
+MOSA RUN NUMBER 15:
+
+Random seed value for 15: 0.5139433437726902
+
+HOT RUN NO. 15:
+Hot run time: 5.664502382278442 seconds
+Hot run stopping temperature = cold run starting temperature: 2.2162043866320706
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 15:
+Cold run time: 4.332562208175659 seconds
+Cold run stopping temperature: 0.05547504210588243
+
+PRUNE NO. 15:
+Prune time: 0.00011444091796875 seconds
+Archive length after cold run: 102
+Archive length after prune: 14
+
+MOSA RUN NUMBER 16:
+
+Random seed value for 16: 0.8488176972685787
+
+HOT RUN NO. 16:
+Hot run time: 7.095564126968384 seconds
+Hot run stopping temperature = cold run starting temperature: 1.4702752700041597
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 16:
+Cold run time: 12.356352806091309 seconds
+Cold run stopping temperature: 4.339174213459551e-05
+
+PRUNE NO. 16:
+Prune time: 0.04834103584289551 seconds
+Archive length after cold run: 1015
+Archive length after prune: 520
+
+MOSA RUN NUMBER 17:
+
+Random seed value for 17: 0.22329107915353885
+
+HOT RUN NO. 17:
+Hot run time: 2.9163708686828613 seconds
+Hot run stopping temperature = cold run starting temperature: 7.21052502596036
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 17:
+Cold run time: 2.356614589691162 seconds
+Cold run stopping temperature: 0.9740350116642653
+
+PRUNE NO. 17:
+Prune time: 6.365776062011719e-05 seconds
+Archive length after cold run: 31
+Archive length after prune: 13
+
+MOSA RUN NUMBER 18:
+
+Random seed value for 18: 0.2946650026871097
+
+HOT RUN NO. 18:
+Hot run time: 3.3837432861328125 seconds
+Hot run stopping temperature = cold run starting temperature: 5.873017699426123
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 18:
+Cold run time: 2.498642921447754 seconds
+Cold run stopping temperature: 0.7933576047193667
+
+PRUNE NO. 18:
+Prune time: 0.001739501953125 seconds
+Archive length after cold run: 147
+Archive length after prune: 83
+
+MOSA RUN NUMBER 19:
+
+Random seed value for 19: 0.6503742417395917
+
+HOT RUN NO. 19:
+Hot run time: 4.0617594718933105 seconds
+Hot run stopping temperature = cold run starting temperature: 4.544429141416038
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 19:
+Cold run time: 11.928017616271973 seconds
+Cold run stopping temperature: 0.0001341182168239204
+
+PRUNE NO. 19:
+Prune time: 0.035422325134277344 seconds
+Archive length after cold run: 774
+Archive length after prune: 463
+
+MOSA RUN NUMBER 20:
+
+Random seed value for 20: 0.09753360174945158
+
+HOT RUN NO. 20:
+Hot run time: 5.317545175552368 seconds
+Hot run stopping temperature = cold run starting temperature: 2.455628129232211
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 20:
+Cold run time: 2.286289930343628 seconds
+Cold run stopping temperature: 0.33171894763394505
+
+PRUNE NO. 20:
+Prune time: 3.337860107421875e-05 seconds
+Archive length after cold run: 42
+Archive length after prune: 3
+
+MOSA RUN NUMBER 21:
+
+Random seed value for 21: 0.5881308010772742
+
+HOT RUN NO. 21:
+Hot run time: 10.528639554977417 seconds
+Hot run stopping temperature = cold run starting temperature: 0.5270729863619091
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 21:
+Cold run time: 13.651159524917603 seconds
+Cold run stopping temperature: 1.5555328704034063e-05
+
+PRUNE NO. 21:
+Prune time: 0.22017645835876465 seconds
+Archive length after cold run: 1541
+Archive length after prune: 1114
+
+MOSA RUN NUMBER 22:
+
+Random seed value for 22: 0.04872488080912729
+
+HOT RUN NO. 22:
+Hot run time: 11.005135774612427 seconds
+Hot run stopping temperature = cold run starting temperature: 0.2848092051151289
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 22:
+Cold run time: 10.706393957138062 seconds
+Cold run stopping temperature: 8.405478782132975e-06
+
+PRUNE NO. 22:
+Prune time: 0.031438589096069336 seconds
+Archive length after cold run: 866
+Archive length after prune: 433
+
+MOSA RUN NUMBER 23:
+
+Random seed value for 23: 0.20846053735884262
+
+HOT RUN NO. 23:
+Hot run time: 2.720400094985962 seconds
+Hot run stopping temperature = cold run starting temperature: 7.21052502596036
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 23:
+Cold run time: 2.279205799102783 seconds
+Cold run stopping temperature: 0.9740350116642653
+
+PRUNE NO. 23:
+Prune time: 2.288818359375e-05 seconds
+Archive length after cold run: 20
+Archive length after prune: 2
+
+MOSA RUN NUMBER 24:
+
+Random seed value for 24: 0.5172978838465893
+
+HOT RUN NO. 24:
+Hot run time: 16.228657245635986 seconds
+Hot run stopping temperature = cold run starting temperature: 0.2848092051151289
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 24:
+Cold run time: 13.14119815826416 seconds
+Cold run stopping temperature: 8.405478782132975e-06
+
+PRUNE NO. 24:
+Prune time: 0.11062192916870117 seconds
+Archive length after cold run: 1562
+Archive length after prune: 367
+
+MOSA RUN NUMBER 25:
+
+Random seed value for 25: 0.9600173033359185
+
+HOT RUN NO. 25:
+Hot run time: 7.894784927368164 seconds
+Hot run stopping temperature = cold run starting temperature: 2.8641237839127704
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 25:
+Cold run time: 7.94789981842041 seconds
+Cold run stopping temperature: 0.04703808708865934
+
+PRUNE NO. 25:
+Prune time: 0.20540213584899902 seconds
+Archive length after cold run: 1691
+Archive length after prune: 799
+
+MOSA RUN NUMBER 26:
+
+Random seed value for 26: 0.8701241366272119
+
+HOT RUN NO. 26:
+Hot run time: 2.505466938018799 seconds
+Hot run stopping temperature = cold run starting temperature: 8.410001488217363
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 26:
+Cold run time: 2.264991044998169 seconds
+Cold run stopping temperature: 1.1360664955990851
+
+PRUNE NO. 26:
+Prune time: 2.1696090698242188e-05 seconds
+Archive length after cold run: 14
+Archive length after prune: 1
+
+MOSA RUN NUMBER 27:
+
+Random seed value for 27: 0.30793495262497084
+
+HOT RUN NO. 27:
+Hot run time: 11.381646633148193 seconds
+Hot run stopping temperature = cold run starting temperature: 0.2997991632790831
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 27:
+Cold run time: 2.9047577381134033 seconds
+Cold run stopping temperature: 0.040498421467247546
+
+PRUNE NO. 27:
+Prune time: 0.009088516235351562 seconds
+Archive length after cold run: 530
+Archive length after prune: 202
+
+MOSA RUN NUMBER 28:
+
+Random seed value for 28: 0.4257214105188958
+
+HOT RUN NO. 28:
+Hot run time: 2.7126951217651367 seconds
+Hot run stopping temperature = cold run starting temperature: 7.590026343116168
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 28:
+Cold run time: 14.639307498931885 seconds
+Cold run stopping temperature: 0.0002240019080742288
+
+PRUNE NO. 28:
+Prune time: 0.027284860610961914 seconds
+Archive length after cold run: 1076
+Archive length after prune: 219
+
+MOSA RUN NUMBER 29:
+
+Random seed value for 29: 0.7290137422891191
+
+HOT RUN NO. 29:
+Hot run time: 12.49805498123169 seconds
+Hot run stopping temperature = cold run starting temperature: 0.2848092051151289
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 29:
+Cold run time: 11.190461158752441 seconds
+Cold run stopping temperature: 8.405478782132975e-06
+
+PRUNE NO. 29:
+Prune time: 0.008090019226074219 seconds
+Archive length after cold run: 922
+Archive length after prune: 168
+
+MOSA RUN NUMBER 30:
+
+Random seed value for 30: 0.8637599855700829
+
+HOT RUN NO. 30:
+Hot run time: 13.995254278182983 seconds
+Hot run stopping temperature = cold run starting temperature: 0.2848092051151289
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 30:
+Cold run time: 4.312537431716919 seconds
+Cold run stopping temperature: 0.025242463608428058
+
+PRUNE NO. 30:
+Prune time: 0.08759379386901855 seconds
+Archive length after cold run: 1324
+Archive length after prune: 508
+
+MOSA RUN NUMBER 31:
+
+Random seed value for 31: 0.644143536068335
+
+HOT RUN NO. 31:
+Hot run time: 8.086309909820557 seconds
+Hot run stopping temperature = cold run starting temperature: 0.7944780737876544
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 31:
+Cold run time: 2.337207555770874 seconds
+Cold run stopping temperature: 0.10732220706295838
+
+PRUNE NO. 31:
+Prune time: 0.0001373291015625 seconds
+Archive length after cold run: 79
+Archive length after prune: 21
+
+MOSA RUN NUMBER 32:
+
+Random seed value for 32: 0.28605382166051563
+
+HOT RUN NO. 32:
+Hot run time: 12.668323040008545 seconds
+Hot run stopping temperature = cold run starting temperature: 0.2848092051151289
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 32:
+Cold run time: 12.502708673477173 seconds
+Cold run stopping temperature: 8.405478782132975e-06
+
+PRUNE NO. 32:
+Prune time: 0.06066417694091797 seconds
+Archive length after cold run: 1300
+Archive length after prune: 326
+
+MOSA RUN NUMBER 33:
+
+Random seed value for 33: 0.8588892672930397
+
+HOT RUN NO. 33:
+Hot run time: 11.577802896499634 seconds
+Hot run stopping temperature = cold run starting temperature: 0.2848092051151289
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 33:
+Cold run time: 2.9042296409606934 seconds
+Cold run stopping temperature: 0.03847350039388516
+
+PRUNE NO. 33:
+Prune time: 0.0147247314453125 seconds
+Archive length after cold run: 682
+Archive length after prune: 287
+
+MOSA RUN NUMBER 34:
+
+Random seed value for 34: 0.24851012743772993
+
+HOT RUN NO. 34:
+Hot run time: 4.599638223648071 seconds
+Hot run stopping temperature = cold run starting temperature: 3.173544358906117
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 34:
+Cold run time: 2.2779319286346436 seconds
+Cold run stopping temperature: 0.4286987848339765
+
+PRUNE NO. 34:
+Prune time: 4.029273986816406e-05 seconds
+Archive length after cold run: 39
+Archive length after prune: 5
+
+MOSA RUN NUMBER 35:
+
+Random seed value for 35: 0.038561680881409655
+
+HOT RUN NO. 35:
+Hot run time: 14.342068433761597 seconds
+Hot run stopping temperature = cold run starting temperature: 0.2848092051151289
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 35:
+Cold run time: 17.444127321243286 seconds
+Cold run stopping temperature: 8.405478782132975e-06
+
+PRUNE NO. 35:
+Prune time: 0.33156561851501465 seconds
+Archive length after cold run: 2581
+Archive length after prune: 1243
+
+MOSA RUN NUMBER 36:
+
+Random seed value for 36: 0.45805494822409054
+
+HOT RUN NO. 36:
+Hot run time: 4.281313419342041 seconds
+Hot run stopping temperature = cold run starting temperature: 3.896279935121575
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 36:
+Cold run time: 11.454562902450562 seconds
+Cold run stopping temperature: 0.00011498960614940874
+
+PRUNE NO. 36:
+Prune time: 0.012917518615722656 seconds
+Archive length after cold run: 620
+Archive length after prune: 275
+
+MOSA RUN NUMBER 37:
+
+Random seed value for 37: 0.7285071915957256
+
+HOT RUN NO. 37:
+Hot run time: 6.238049745559692 seconds
+Hot run stopping temperature = cold run starting temperature: 3.5163926414472213
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 37:
+Cold run time: 3.4681992530822754 seconds
+Cold run stopping temperature: 0.4275112535740486
+
+PRUNE NO. 37:
+Prune time: 0.1315011978149414 seconds
+Archive length after cold run: 1054
+Archive length after prune: 940
+
+MOSA RUN NUMBER 38:
+
+Random seed value for 38: 0.9444966028573069
+
+HOT RUN NO. 38:
+Hot run time: 5.778886556625366 seconds
+Hot run stopping temperature = cold run starting temperature: 2.0001244589354434
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 38:
+Cold run time: 2.355287551879883 seconds
+Cold run stopping temperature: 0.2701871560912709
+
+PRUNE NO. 38:
+Prune time: 0.00010728836059570312 seconds
+Archive length after cold run: 109
+Archive length after prune: 8
+
+MOSA RUN NUMBER 39:
+
+Random seed value for 39: 0.38477311951674376
+
+HOT RUN NO. 39:
+Hot run time: 6.101226806640625 seconds
+Hot run stopping temperature = cold run starting temperature: 1.8051123241892375
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 39:
+Cold run time: 2.3216910362243652 seconds
+Cold run stopping temperature: 0.24384390837237196
+
+PRUNE NO. 39:
+Prune time: 6.341934204101562e-05 seconds
+Archive length after cold run: 26
+Archive length after prune: 11
+
+MOSA RUN NUMBER 40:
+
+Random seed value for 40: 0.5468891561453547
+
+HOT RUN NO. 40:
+Hot run time: 4.100916385650635 seconds
+Hot run stopping temperature = cold run starting temperature: 4.317207684345236
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 40:
+Cold run time: 11.65315580368042 seconds
+Cold run stopping temperature: 0.00012741230598272438
+
+PRUNE NO. 40:
+Prune time: 0.01158905029296875 seconds
+Archive length after cold run: 492
+Archive length after prune: 173
+
+MOSA RUN NUMBER 41:
+
+Random seed value for 41: 0.4076870280802861
+
+HOT RUN NO. 41:
+Hot run time: 12.231321334838867 seconds
+Hot run stopping temperature = cold run starting temperature: 0.2848092051151289
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 41:
+Cold run time: 11.487024068832397 seconds
+Cold run stopping temperature: 8.405478782132975e-06
+
+PRUNE NO. 41:
+Prune time: 0.0731501579284668 seconds
+Archive length after cold run: 1034
+Archive length after prune: 566
+
+MOSA RUN NUMBER 42:
+
+Random seed value for 42: 0.25092362374494015
+
+HOT RUN NO. 42:
+Hot run time: 9.198895454406738 seconds
+Hot run stopping temperature = cold run starting temperature: 0.9754106537398021
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 42:
+Cold run time: 6.127047300338745 seconds
+Cold run stopping temperature: 0.014417430692756219
+
+PRUNE NO. 42:
+Prune time: 0.04387521743774414 seconds
+Archive length after cold run: 729
+Archive length after prune: 384
+
+MOSA RUN NUMBER 43:
+
+Random seed value for 43: 0.3745401188473625
+
+HOT RUN NO. 43:
+Hot run time: 12.8325834274292 seconds
+Hot run stopping temperature = cold run starting temperature: 0.42930424159793973
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 43:
+Cold run time: 14.066946029663086 seconds
+Cold run stopping temperature: 1.2669912450240145e-05
+
+PRUNE NO. 43:
+Prune time: 0.18145990371704102 seconds
+Archive length after cold run: 1561
+Archive length after prune: 776
+
+MOSA RUN NUMBER 44:
+
+Random seed value for 44: 0.11505456638977896
+
+HOT RUN NO. 44:
+Hot run time: 12.141987323760986 seconds
+Hot run stopping temperature = cold run starting temperature: 0.7170164615933582
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 44:
+Cold run time: 7.9475085735321045 seconds
+Cold run stopping temperature: 0.007726041425316048
+
+PRUNE NO. 44:
+Prune time: 0.07417178153991699 seconds
+Archive length after cold run: 1408
+Archive length after prune: 519
+
+MOSA RUN NUMBER 45:
+
+Random seed value for 45: 0.8348421486656494
+
+HOT RUN NO. 45:
+Hot run time: 11.938819408416748 seconds
+Hot run stopping temperature = cold run starting temperature: 0.2848092051151289
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 45:
+Cold run time: 4.0143890380859375 seconds
+Cold run stopping temperature: 0.01656158037348965
+
+PRUNE NO. 45:
+Prune time: 0.011687040328979492 seconds
+Archive length after cold run: 582
+Archive length after prune: 169
+
+MOSA RUN NUMBER 46:
+
+Random seed value for 46: 0.9890115134756001
+
+HOT RUN NO. 46:
+Hot run time: 5.512256145477295 seconds
+Hot run stopping temperature = cold run starting temperature: 2.2162043866320706
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 46:
+Cold run time: 2.369603395462036 seconds
+Cold run stopping temperature: 0.29937635023963544
+
+PRUNE NO. 46:
+Prune time: 5.888938903808594e-05 seconds
+Archive length after cold run: 59
+Archive length after prune: 1
+
+MOSA RUN NUMBER 47:
+
+Random seed value for 47: 0.7838323508057506
+
+HOT RUN NO. 47:
+Hot run time: 4.216909885406494 seconds
+Hot run stopping temperature = cold run starting temperature: 3.7014659383654966
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 47:
+Cold run time: 11.04978322982788 seconds
+Cold run stopping temperature: 0.00010924012584193831
+
+PRUNE NO. 47:
+Prune time: 0.008181095123291016 seconds
+Archive length after cold run: 600
+Archive length after prune: 139
+
+MOSA RUN NUMBER 48:
+
+Random seed value for 48: 0.11348847189364952
+
+HOT RUN NO. 48:
+Hot run time: 8.685107946395874 seconds
+Hot run stopping temperature = cold run starting temperature: 1.1975483966388254
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 48:
+Cold run time: 12.611319303512573 seconds
+Cold run stopping temperature: 3.534284516701638e-05
+
+PRUNE NO. 48:
+Prune time: 0.03158068656921387 seconds
+Archive length after cold run: 862
+Archive length after prune: 248
+
+MOSA RUN NUMBER 49:
+
+Random seed value for 49: 0.01749027093115263
+
+HOT RUN NO. 49:
+Hot run time: 10.487809658050537 seconds
+Hot run stopping temperature = cold run starting temperature: 0.2997991632790831
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 49:
+Cold run time: 10.968464374542236 seconds
+Cold run stopping temperature: 8.847872402245239e-06
+
+PRUNE NO. 49:
+Prune time: 0.05120205879211426 seconds
+Archive length after cold run: 955
+Archive length after prune: 562
+
+MOSA RUN NUMBER 50:
+
+Random seed value for 50: 0.3009644558559146
+
+HOT RUN NO. 50:
+Hot run time: 12.448116540908813 seconds
+Hot run stopping temperature = cold run starting temperature: 0.2848092051151289
+Number of temperatures: 88
+Step scaling factor: 0.002
+
+COLD RUN NO. 50:
+Cold run time: 11.389284372329712 seconds
+Cold run stopping temperature: 8.405478782132975e-06
+
+PRUNE NO. 50:
+Prune time: 0.0648200511932373 seconds
+Archive length after cold run: 1075
+Archive length after prune: 602
