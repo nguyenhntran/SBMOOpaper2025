@@ -1,7 +1,7 @@
 # -------------- PART 0: PYTHON PRELIM --------------
 
 # Additional notes: 
-# mosa.py evolve() function has been edited
+# mosa.py evolve() function has been edited to return final stopping temperature
 
 # Import packages
 import importlib
@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import pyvista as pv
 import gc
 from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from scipy.optimize import fsolve
 from math import inf
 from numpy import random
@@ -23,7 +24,7 @@ from scipy.spatial import ConvexHull, Delaunay
 output_file = f"MosaStats.txt"
 
 
-# -------------- PART 0a: CHOOSE CIRCUIT AND SET UP FOLDER --------------
+# -------------- PART 0: CHOOSE CIRCUIT AND SET UP FOLDER --------------
 
 
 # Choose circuit
@@ -32,7 +33,7 @@ circuit = input("Please enter name of the circuit: ")
 # Import circuit config file
 config = importlib.import_module(circuit)
 
-# Define subfolder name to work in
+# Define the subfolder name
 folder_name = f"MOSA_{circuit}"
 
 # Create folder if not yet exist
@@ -45,22 +46,27 @@ os.chdir(folder_name)
 # Prompt new folder name
 print(f"Current working directory: {os.getcwd()}")
 
-
 # -------------- PART 0b: DEFINE DYNAMICAL SYSTEM --------------
 
 
 # dx/dt
 Equ1 = config.Equ1
+
+# dy/dt
+Equ2 = config.Equ2
     
 # Define function to evaluate vector field
 def Equs(P, t, params):
     x = P[0]
-    alpha = params[0]
-    n     = params[1]
-    val0 = Equ1(x, alpha, n)
-    return np.array([val0])
+    y = P[1]
+    beta_x = params[0]
+    beta_y = params[1]
+    n      = params[2]
+    val0 = Equ1(x, y, beta_x, n)
+    val1 = Equ2(x, y, beta_y, n)
+    return np.array([val0, val1])
 
-# Define initial time
+# Define values
 t = 0.0
 
 # Define number of steady states expected
@@ -71,41 +77,47 @@ Please enter either 1 or 2: """))
 
 # -------------- PART 0c: DEFINE SENSITIVITY FUNCTIONS --------------
 
-
-# Load analytical sensitivity expressions
-S_alpha_xss_analytic = config.S_alpha_xss_analytic
+# Define analytical sensitivity expressions
+S_betax_xss_analytic = config.S_betax_xss_analytic
+S_betax_yss_analytic = config.S_betay_xss_analytic
+S_betay_xss_analytic = config.S_betay_xss_analytic
+S_betay_yss_analytic = config.S_betay_yss_analytic
 S_n_xss_analytic = config.S_n_xss_analytic
-
+S_n_yss_analytic = config.S_n_yss_analytic
 
 # -------------- PART 0d: CHOOSE SENSITIVITY FUNCTIONS --------------
 
-
 # Print prompt
 print("""
-Only two sensitivity functions are present:
-0. |S_alpha_xss|
-1. |S_n_xss|
-MOSA will anneal this pair.
+We have the following sensitivity functions:
+0. |S_betax_xss|
+1. |S_betax_yss|
+2. |S_betay_xss|
+3. |S_betay_yss|
+4. |S_n_xss|
+5. |S_n_yss|
 """)
 
 # Choose pair of functions
-choice1 = 0
-choice2 = 1
+choice1 = int(input("Please select first option number:"))
+choice2 = int(input("Please select second option number:"))
 
 # List of sensitivity function names
 sensitivity_labels = [
-    "|S_alpha_xss|",
-    "|S_n_xss|"]
+    "|S_betax_xss|",
+    "|S_betax_yss|",
+    "|S_betay_xss|",
+    "|S_betay_yss|",
+    "|S_n_xss|",
+    "|S_n_yss|"]
 
 # Save function names for later use
 label1 = sensitivity_labels[choice1]
 label2 = sensitivity_labels[choice2]
 
-
 # -------------- PART 0e: CHANGING DIRECTORIES --------------
 
-
-# Define subfolder name to work in
+# Define the subfolder name
 subfolder_name = f"MOSA_sensfuncs_{choice1}_and_{choice2}"
 
 # Create folder if not yet exist
@@ -128,99 +140,115 @@ with open(output_file, "w") as file:
     file.write(f"Sensitivity function 1: {label1}\n")
     file.write(f"Sensitivity function 2: {label2}\n")
 
-
 # -------------- PART 0f: DEFINE FUNCTIONS --------------
 
-
 # DEFINE FUNCTION TO CALCULATE THE EUCLIDEAN DISTANCE BETWEEN TWO POINTS
-def euclidean_distance(x1, x2):
-    return abs(x1 - x2)
+def euclidean_distance(x1, y1, x2, y2):
+    return np.sqrt((x1 - x2)**2 + (y1 - y2)**2) 
 
-# DEFINE FUNCTION THAT SOLVES FOR STEADY STATES XSS GIVEN AN INITIAL GUESS
-def ssfinder(alpha_val,n_val):
+# DEFINE FUNCTION THAT SOLVES FOR STEADY STATES XSS AND YSS GIVEN SOME INITIAL GUESS
+def ssfinder(beta_x_val,beta_y_val,n_val):
 
     # If we have one steady state
-    if numss == 1:
-
-        # Load initial guesses for solving which can be a function of a choice of alpha and n values
-        InitGuesses = config.generate_initial_guesses(alpha_val, n_val)
-
+    if numss == 1: 
+        
+        # Define initial guesses
+        InitGuesses = config.generate_initial_guesses(beta_x_val, beta_y_val)
+        
         # Define array of parameters
-        params = np.array([alpha_val, n_val])
-
-        # For each initial guess in the list of initial guesses we loaded
+        params = np.array([beta_x_val, beta_y_val, n_val])
+        
+        # For each until you get one that gives a solution or you exhaust the list
         for InitGuess in InitGuesses:
-            
+    
             # Get solution details
             output, infodict, intflag, _ = fsolve(Equs, InitGuess, args=(t, params), xtol=1e-12, full_output=True)
-            xss = output
-            fvec = infodict['fvec']
-
+            xss, yss = output
+            fvec = infodict['fvec'] 
+    
             # Check if stable attractor point
             delta = 1e-8
-            dEqudx = (Equs(xss+delta, t, params)-Equs(xss, t, params))/delta
-            jac = np.array([[dEqudx]])
-            eig = jac
-            instablility = np.real(eig) >= 0
-
-            # Check if it is sufficiently large, has small residual, and successfully converges
-            if xss > 0.04 and np.linalg.norm(fvec) < 1e-10 and intflag == 1 and instablility==False:
-                # If so, it is a valid solution and we return it
-                return xss
-
-        # If no valid solutions are found after trying all initial guesses
-        return float('nan')
-
+            dEqudx = (Equs([xss+delta,yss], t, params)-Equs([xss,yss], t, params))/delta
+            dEqudy = (Equs([xss,yss+delta], t, params)-Equs([xss,yss], t, params))/delta
+            jac = np.transpose(np.vstack((dEqudx,dEqudy)))
+            eig = np.linalg.eig(jac)[0]
+            instablility = np.any(np.real(eig) >= 0)
     
+            # Check if it is sufficiently large, has small residual, and successfully converges
+            if xss > 0.04 and yss > 0.04 and np.linalg.norm(fvec) < 1e-10 and intflag == 1 and instablility==False:
+                # If so, it is a valid solution and we return it
+                return xss, yss
+    
+        # If no valid solutions are found after trying all initial guesses
+        return float('nan'), float('nan')
+            
+
 # DEFINE FUNCTION THAT RETURNS PAIR OF SENSITIVITIES
-def senpair(xss_list, alpha_list, n_list, choice1, choice2):
+def senpair(xss_list, yss_list, beta_x_list, beta_y_list, n_list, choice1, choice2):
     
     # Evaluate sensitivities
-    S_alpha_xss = S_alpha_xss_analytic(xss_list, alpha_list, n_list)
-    S_n_xss     = S_n_xss_analytic(xss_list, alpha_list, n_list)
+    S_betax_xss = S_betax_xss_analytic(xss_list, yss_list, beta_x_list, beta_y_list, n_list)
+    S_betax_yss = S_betax_yss_analytic(xss_list, yss_list, beta_x_list, beta_y_list, n_list)
+    S_betay_xss = S_betay_xss_analytic(xss_list, yss_list, beta_x_list, beta_y_list, n_list)
+    S_betay_yss = S_betay_yss_analytic(xss_list, yss_list, beta_x_list, beta_y_list, n_list)
+    S_n_xss     =     S_n_xss_analytic(xss_list, yss_list, beta_x_list, beta_y_list, n_list)
+    S_n_yss     =     S_n_yss_analytic(xss_list, yss_list, beta_x_list, beta_y_list, n_list)
 
     # Sensitivity dictionary
     sensitivities = {
-        "S_alpha_xss": S_alpha_xss,
-        "S_n_xss": S_n_xss}
+        "S_betax_xss": S_betax_xss,
+        "S_betax_yss": S_betax_yss,
+        "S_betay_xss": S_betay_xss,
+        "S_betay_yss": S_betay_yss,
+        "S_n_xss": S_n_xss,
+        "S_n_yss": S_n_yss}
 
     # Map indices to keys
     labels = {
-        0: "S_alpha_xss",
-        1: "S_n_xss"}
+        0: "S_betax_xss",
+        1: "S_betax_yss",
+        2: "S_betay_xss",
+        3: "S_betay_yss",
+        4: "S_n_xss",
+        5: "S_n_yss"}
 
     # Return values of the two sensitivities of interest
     return sensitivities[labels[choice1]], sensitivities[labels[choice2]]
-
-
+    """
+    Note: 
+    Both outputs are of type numpy.ndarray
+    Eg:
+    xss_list = np.array((1.0000000108275326, 2.8793852415718164))
+    yss_list = np.array((2.8793852415718164, 1.0000000108275326))
+    beta_x_list = np.array([2,3])
+    beta_y_list = np.array([2,3])
+    n_list = np.array([2,3])
+    choice1 = 0
+    choice2 = 1
+    ans = senpair(xss_list, yss_list, beta_x_list, beta_y_list, n_list, choice1, choice2) == (array([4.61785728e+07, 1.01476269e+00]), array([ 0.53265904, 24.00004561]))
+    type(ans) = tuple
+    type(ans[0]) == type(ans[1]) == numpy.ndarray
+    """
+    
 # DEFINE OBJECTIVE FUNCTION TO ANNEAL
 def fobj(solution):
-
-    '''
-    Uncomment the following line if need to see solution printed.
-    It will look like this:
-    Solution:  {'alpha': 3.239629898497018, 'n': 9.996303250351326}
-    Solution:  {'alpha': 2.7701015749115143, 'n': 9.996303250351326}
-    Solution:  {'alpha': 2.6542032278143664, 'n': 9.910685695594527}
-    Solution:  {'alpha': 2.6542032278143664, 'n': 9.363644921265}
-    Solution:  {'alpha': 3.0278948409846858, 'n': 9.996303250351326}
-    Solution:  {'alpha': 2.6451188083692183, 'n': 9.996303250351326}
-    '''
-    # print("Solution: ", solution)
 	
 	# Update parameter set
-    alpha_val = solution["alpha"]
+    beta_x_val = solution["beta_x"]
+    beta_y_val = solution["beta_y"]
     n_val = solution["n"]
 
     # Create an empty numpy array
     xss_collect = np.array([])
+    yss_collect = np.array([])
 
-    # Find steady states and store
-    xss = ssfinder(alpha_val,n_val)
+    # Find steady states and store.   <--------------------------------------------------------------- dont need to make condition for if numss==1 or 2 because this just takes in the list given. condition comes later in main part of script
+    xss, yss = ssfinder(beta_x_val,beta_y_val,n_val)
     xss_collect = np.append(xss_collect,xss)
+    yss_collect = np.append(yss_collect,yss)
     
     # Get sensitivity pair
-    sens1, sens2 = senpair(xss_collect, solution["alpha"], solution["n"], choice1, choice2)
+    sens1, sens2 = senpair(xss_collect, yss_collect, solution["beta_x"], solution["beta_y"], solution["n"], choice1, choice2)
     ans1 = float(sens1)
     ans2 = float(sens2)
     return ans1, ans2
@@ -234,16 +262,26 @@ with open(output_file, "a") as file:
     file.write("--------------------------------------------\n")
     file.write("System probing to estimate MOSA run parameters:\n")
     file.write("--------------------------------------------\n")
-
-# Sample alpha values
-alpha_min = float(input("Please enter minimum alpha value: "))
-alpha_max = float(input("Please enter maximum alpha value: "))
-alpha_sampsize = int(input("Please enter the number of alpha samples: "))
-alpha_samps = np.linspace(alpha_min, alpha_max, alpha_sampsize)
+    
+# Sample beta_x values
+beta_x_min = float(input("Please enter minimum beta_x value: "))
+beta_x_max = float(input("Please enter maximum beta_x value: "))
+beta_x_sampsize = int(input("Please enter the number of beta_x samples: "))
+beta_x_samps = np.linspace(beta_x_min, beta_x_max, beta_x_sampsize)
 
 # Record info
 with open(output_file, "a") as file:
-    file.write(f"alpha values from {alpha_min} to {alpha_max} with {alpha_sampsize} linspaced samples\n")
+    file.write(f"beta_x values from {beta_x_min} to {beta_x_max} with {beta_x_sampsize} linspaced samples\n")
+
+# Sample beta_y values
+beta_y_min = float(input("Please enter minimum beta_y value: "))
+beta_y_max = float(input("Please enter maximum beta_y value: "))
+beta_y_sampsize = int(input("Please enter the number of beta_y samples: "))
+beta_y_samps = np.linspace(beta_y_min, beta_y_max, beta_y_sampsize)
+
+# Record info
+with open(output_file, "a") as file:
+    file.write(f"beta_y values from {beta_y_min} to {beta_y_max} with {beta_y_sampsize} linspaced samples\n")
 
 # Sample n values
 n_min = float(input("Please enter minimum n value: "))
@@ -257,20 +295,23 @@ with open(output_file, "a") as file:
 
 # Create empty arrays to store corresponding values of xss and yss
 xss_samps = np.array([])
+yss_samps = np.array([])
 sens1_samps = np.array([])
 sens2_samps = np.array([])
 
 # For each combination of parameters
-for i in alpha_samps:
-    for j in n_samps:
-        
-        # Get steady state value and store
-        xss = ssfinder(i,j)
-        xss_samps = np.append(xss_samps,xss)
-        # Get corresponding sensitivities and store
-        sens1, sens2 = senpair(xss, i, j, choice1, choice2)
-        sens1_samps = np.append(sens1_samps,sens1)
-        sens2_samps = np.append(sens2_samps,sens2)
+for i in beta_x_samps:
+    for j in beta_x_samps:
+        for k in n_samps:
+            
+            # Get steady states and store
+            xss, yss = ssfinder(i,j,k)
+            xss_samps = np.append(xss_samps,xss)
+            yss_samps = np.append(yss_samps,yss)
+            # Get sensitivities and store
+            sens1, sens2 = senpair(xss, yss, i, j, k, choice1, choice2)
+            sens1_samps = np.append(sens1_samps,sens1)
+            sens2_samps = np.append(sens2_samps,sens2)
 
 # Get min and max of each sensitivity and print
 sens1_samps_min = np.nanmin(sens1_samps)
@@ -319,7 +360,7 @@ with open(output_file, "a") as file:
     file.write("(This temperature will be used to estimate when to end hot run. The actual finishing temperature from the hot run will used for the cold run.)\n")
 
 
-# -------------- PART 2a: MOSA PREPARATIONS --------------
+# -------------- PART 2a: PREPPING MOSA --------------
 
 
 # Print prompts
@@ -345,15 +386,17 @@ for run in range(runs):
         file.write(f"MOSA RUN NUMBER {run+1}:\n")
     
     # Define lists to collect sensitivity and parameter values from each MOSA run before pruning
-    annealed_Salpha = []
-    annealed_Sn     = []
-    annealed_alpha  = []
-    annealed_n      = []
+    annealed_sensfunc1 = []
+    annealed_sensfunc2 = []
+    annealed_betax     = []
+    annealed_betay     = []
+    annealed_n         = []
     # Define lists to collect sensitivity and parameter values from each MOSA run after pruning
-    pareto_Salpha = []
-    pareto_Sn     = []
-    pareto_alpha  = []
-    pareto_n      = []
+    pareto_sensfunc1 = []
+    pareto_sensfunc2 = []
+    pareto_betax     = []
+    pareto_betay     = []
+    pareto_n         = []
     
     # Delete archive and checkpoint json files at the start of each new run
     files_to_delete = ["archive.json", "checkpoint.json"]
@@ -366,7 +409,7 @@ for run in range(runs):
 
 	# -------------- PART 2b: ANNEAL TO GET PARETO FRONT IN SENSITIVITY SPACE --------------
 	
-    # Set random seed for MOSA
+	# Set random seed for MOSA
     random.seed(run)
     with open(output_file, "a") as file:
         file.write(f"\n")
@@ -376,17 +419,17 @@ for run in range(runs):
     opt = mosa.Anneal()
     opt.archive_size = 10000
     opt.maximum_archive_rejections = opt.archive_size
-    opt.population = {"alpha": (alpha_min, alpha_max), "n": (n_min, n_max)}
+    opt.population = {"beta_x": (beta_x_min, beta_x_max), "beta_y": (beta_y_min, beta_y_max), "n": (n_min, n_max)}
 	
 	# Hot run options
     opt.initial_temperature = temp_hot
     opt.number_of_iterations = iterations
     opt.temperature_decrease_factor = 0.95
     opt.number_of_temperatures = int(np.ceil(np.log(temp_cold / temp_hot) / np.log(opt.temperature_decrease_factor)))
-    opt.number_of_solution_elements = {"alpha":1, "n":1}
+    opt.number_of_solution_elements = {"beta_x":1, "beta_y":1, "n":1}
     step_scaling = 1/opt.number_of_iterations
-    opt.mc_step_size= {"alpha": (alpha_max-alpha_min)*step_scaling , "n": (n_max-n_min)*step_scaling}
-    	
+    opt.mc_step_size= {"beta_x": (beta_x_max-beta_x_min)*step_scaling , "beta_y": (beta_y_max-beta_y_min)*step_scaling , "n": (n_max-n_min)*step_scaling}
+	
     # Hot run
     start_time = time.time()
     hotrun_stoppingtemp = opt.evolve(fobj)
@@ -405,26 +448,25 @@ for run in range(runs):
     opt.number_of_iterations = iterations
     opt.number_of_temperatures = 100
     opt.temperature_decrease_factor = 0.9
-    opt.number_of_solution_elements = {"alpha":1,"n":1}
+    opt.number_of_solution_elements = {"beta_x":1, "beta_y":1, "n":1}
     step_scaling = 1/opt.number_of_iterations
-    opt.mc_step_size= {"alpha": (alpha_max-alpha_min)*step_scaling , "n": (n_max-n_min)*step_scaling}
+    opt.mc_step_size= {"beta_x": (beta_x_max-beta_x_min)*step_scaling , "beta_y": (beta_y_max-beta_y_min)*step_scaling , "n": (n_max-n_min)*step_scaling}
 	
     # Cold run
     start_time = time.time()
     coldrun_stoppingtemp = opt.evolve(fobj)
-    print(f"Cold run time: {time.time() - start_time} seconds")
-    
+
     # Record info
     with open(output_file, "a") as file:
         file.write(f"\n")
         file.write(f"COLD RUN NO. {run+1}:\n")
         file.write(f"Cold run time: {time.time() - start_time} seconds\n")
         file.write(f"Cold run stopping temperature: {coldrun_stoppingtemp}\n")
-    
+        
     # Output 
     start_time = time.time()
     pruned = opt.prunedominated()
-    
+
     # Record info
     with open(output_file, "a") as file:
         file.write(f"\n")
@@ -438,8 +480,8 @@ for run in range(runs):
         data = json.load(f)
         
     # Check archive length
-    length = len([solution["alpha"] for solution in data["Solution"]])
-    
+    length = len([solution["beta_x"] for solution in data["Solution"]])
+
     # Record info
     with open(output_file, "a") as file:
         file.write(f"Archive length after cold run: {length}\n")
@@ -453,8 +495,8 @@ for run in range(runs):
     
     # Add parameter values to collections
     for dummy1, dummy2 in zip(value_1, value_2):
-        annealed_Salpha.append(dummy1)
-        annealed_Sn.append(dummy2)
+        annealed_sensfunc1.append(dummy1)
+        annealed_sensfunc2.append(dummy2)
     
     # Create a 2D plot
     plt.figure()
@@ -465,51 +507,56 @@ for run in range(runs):
     plt.title(f'Unpruned MOSA Pareto Sensitivities - Run No. {run + 1}')
     plt.savefig(f'unpruned_pareto_sensitivities_run_{run + 1}.png', dpi=300)
     plt.close()
-    
 	
     # -------------- PART 2d: STORE AND PLOT CORRESPONDING POINTS IN PARAMETER SPACE --------------
     
-    # Extract alpha and n values from the solutions
-    alpha_values = [solution["alpha"] for solution in data["Solution"]]
+    # Extract beta_x, beta_y and n values from the solutions
+    beta_x_values = [solution["beta_x"] for solution in data["Solution"]]
+    beta_y_values = [solution["beta_y"] for solution in data["Solution"]]
     n_values = [solution["n"] for solution in data["Solution"]]
     
     # Add parameter values to collections
-    for dummy1, dummy2 in zip(alpha_values, n_values):
-        annealed_alpha.append(dummy1)
-        annealed_n.append(dummy2)
-    
-    # Create a 2D plot
-    plt.figure()
-    plt.scatter(alpha_values, n_values)
-    plt.xlabel('alpha')
-    plt.ylabel('n')
-    plt.grid(True)
-    plt.title(f'Unpruned MOSA Pareto Parameters - Run No. {run + 1}')
-    plt.savefig(f'unpruned_pareto_parameters_run_{run + 1}.png', dpi=300)
+    for dummy1, dummy2, dummy3 in zip(beta_x_values, beta_y_values, n_values):
+        annealed_betax.append(dummy1)
+        annealed_betay.append(dummy2)
+        annealed_n.append(dummy3)
+        
+    # Create a 3D plot
+    fig = plt.figure(figsize=(10,7))
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(beta_x_values, beta_y_values, n_values)
+    ax.set_xlabel('beta_x')
+    ax.set_ylabel('beta_y')
+    ax.set_zlabel('n')
+    ax.set_title(f'Unpruned MOSA Pareto Parameters - Run No. {run + 1}')
+    fig.savefig(f'unpruned_pareto_parameters_run_{run + 1}.png', dpi=300)
     plt.close()
-
+    
     # -------------- PART 2e: SAVE PARETO DATA FROM CURRENT RUN --------------
 
-    # Save S_a annealed values
-    filename = f"annealed_Salpha_run{run+1}.npy"
-    np.save(filename,annealed_Salpha)
-    # Save S_n annealed values
-    filename = f"annealed_Sn_run{run+1}.npy"
-    np.save(filename,annealed_Sn)
-    # Save a annealed values
-    filename = f"annealed_alpha_run{run+1}.npy"
-    np.save(filename,annealed_alpha)
+    # Save sensitivity function 1 annealed values
+    filename = f"annealed_sensfunc1_run{run+1}.npy"
+    np.save(filename,annealed_sensfunc1)
+    # Save sensitivity function 2 annealed values
+    filename = f"annealed_sensfunc2_run{run+1}.npy"
+    np.save(filename,annealed_sensfunc2)
+    # Save betax annealed values
+    filename = f"annealed_betax_run{run+1}.npy"
+    np.save(filename,annealed_betax)
+    # Save betay annealed values
+    filename = f"annealed_betay_run{run+1}.npy"
+    np.save(filename,annealed_betay)
     # Save n annealed values
     filename = f"annealed_n_run{run+1}.npy"
     np.save(filename,annealed_n)
-
+    
     # -------------- PART 2f: STORE AND PLOT PRUNED PARETO FRONT IN SENSITIVITY SPACE --------------
 	
     data = pruned
         
     # Check archive length
-    length = len([solution["alpha"] for solution in data["Solution"]])
-    
+    length = len([solution["beta_x"] for solution in data["Solution"]])
+
     # Record info
     with open(output_file, "a") as file:
         file.write(f"Archive length after prune: {length}\n")
@@ -523,8 +570,8 @@ for run in range(runs):
     
     # Add parameter values to collections
     for dummy1, dummy2 in zip(value_1, value_2):
-        pareto_Salpha.append(dummy1)
-        pareto_Sn.append(dummy2)
+        pareto_sensfunc1.append(dummy1)
+        pareto_sensfunc2.append(dummy2)
     
     # Create a 2D plot
     plt.figure()
@@ -533,95 +580,131 @@ for run in range(runs):
     plt.ylabel(label2)
     plt.grid(True)
     plt.title(f'Pruned MOSA Pareto Sensitivities - Run No. {run + 1}')
-    plt.savefig(f'pruned_pareto_sensitivities_run_{run + 1}.png', dpi=300)
+    plt.savefig(f'Pruned_pareto_sensitivities_run_{run + 1}.png', dpi=300)
     plt.close()
     
-	
     # -------------- PART 2g: STORE AND PLOT CORRESPONDING POINTS IN PARAMETER SPACE --------------
     
-    # Extract alpha and n values from the solutions
-    alpha_values = [solution["alpha"] for solution in data["Solution"]]
+    # Extract beta_x, beta_y and n values from the solutions
+    beta_x_values = [solution["beta_x"] for solution in data["Solution"]]
+    beta_y_values = [solution["beta_y"] for solution in data["Solution"]]
     n_values = [solution["n"] for solution in data["Solution"]]
     
     # Add parameter values to collections
-    for dummy1, dummy2 in zip(alpha_values, n_values):
-        pareto_alpha.append(dummy1)
-        pareto_n.append(dummy2)
-    
-    # Create a 2D plot
-    plt.figure()
-    plt.scatter(alpha_values, n_values)
-    plt.xlabel('alpha')
-    plt.ylabel('n')
-    plt.grid(True)
-    plt.title(f'Pruned MOSA Pareto Parameters - Run No. {run + 1}')
-    plt.savefig(f'pruned_pareto_parameters_run_{run + 1}.png', dpi=300)
+    for dummy1, dummy2, dummy3 in zip(beta_x_values, beta_y_values, n_values):
+        pareto_betax.append(dummy1)
+        pareto_betay.append(dummy2)
+        pareto_n.append(dummy3)
+        
+    # Create a 3D plot
+    fig = plt.figure(figsize=(10,7))
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(beta_x_values, beta_y_values, n_values)
+    ax.set_xlabel('beta_x')
+    ax.set_ylabel('beta_y')
+    ax.set_zlabel('n')
+    ax.set_title(f'Pruned MOSA Pareto Parameters - Run No. {run + 1}')
+    fig.savefig(f'Pruned_pareto_parameters_run_{run + 1}.png', dpi=300)
     plt.close()
 
-    # -------------- PART 2e: SAVE PARETO DATA FROM CURRENT RUN --------------
+    # -------------- PART 2h: SAVE PARETO DATA FROM CURRENT RUN --------------
 
-    # Save S_a pareto values
-    filename = f"pareto_Salpha_run{run+1}.npy"
-    np.save(filename,pareto_Salpha)
-    # Save S_n pareto values
-    filename = f"pareto_Sn_run{run+1}.npy"
-    np.save(filename,pareto_Sn)
-    # Save a pareto values
-    filename = f"pareto_alpha_run{run+1}.npy"
-    np.save(filename,pareto_alpha)
+    # Save sensitivity function 1 pareto values
+    filename = f"pareto_sensfunc1_run{run+1}.npy"
+    np.save(filename,pareto_sensfunc1)
+    # Save sensitivity function 2 pareto values
+    filename = f"pareto_sensfunc2_run{run+1}.npy"
+    np.save(filename,pareto_sensfunc2)
+    # Save betax pareto values
+    filename = f"pareto_betax_run{run+1}.npy"
+    np.save(filename,pareto_betax)
+    # Save betay pareto values
+    filename = f"pareto_betay_run{run+1}.npy"
+    np.save(filename,pareto_betay)
     # Save n pareto values
     filename = f"pareto_n_run{run+1}.npy"
     np.save(filename,pareto_n)
+        
 
 # -------------- PART 3a: VISUALISE EACH MOSA RECTANGULAR BOUNDS --------------
 
-# Print prompt
-print("Plotting rectangular bounds for each MOSA run...")
-
-# Create a colormap
-colors = plt.cm.viridis(np.linspace(0, 1, runs))
-
-# Create plot
-fig, ax = plt.subplots(figsize=(6, 6))
-
-# For each run in our total number of runs
-for run in range(1, runs + 1):
-
-    # Load the parameter values for that run's Pareto front
-    pareto_alpha = np.load(f"pareto_alpha_run{run}.npy", allow_pickle=True)
-    pareto_n = np.load(f"pareto_n_run{run}.npy", allow_pickle=True)
-    
-    # Create 2D points from the loaded data
-    points = np.array(list(zip(pareto_alpha, pareto_n)))
-    
-    # Compute the bounding box from the points
-    min_x, min_y = np.min(points, axis=0)
-    max_x, max_y = np.max(points, axis=0)
-    
-    # Define the bounding box (close the rectangle by repeating the first point)
-    bounding_box = np.array([
-        [min_x, min_y],  # Bottom-left
-        [max_x, min_y],  # Bottom-right
-        [max_x, max_y],  # Top-right
-        [min_x, max_y],  # Top-left
-        [min_x, min_y]   # Closing the rectangle
-    ])
-    
-    # Pick a color for this run
-    color = colors[run - 1]
-    
-    # Plot the bounding rectangle for this run with a unique color
-    ax.plot(bounding_box[:, 0], bounding_box[:, 1],
-            color=color, linewidth=2, label=f"MOSA Run {run}")
-
-# Cosmetics
-ax.set_xlabel(r"$\alpha$")
-ax.set_ylabel(r"$n$")
-ax.set_title("Bounding Rectangle for Each MOSA Run")
-ax.set_xlim([alpha_min, alpha_max])
-ax.set_ylim([n_min, n_max])
-ax.legend()
-
-# Save the figure and close
-plt.savefig('searchspaces_runs.png', dpi=300)
-plt.close()
+## Print prompt
+#print("Plotting rectangular prism bounds for each MOSA run...")
+#
+## Create a colormap
+#colors = plt.cm.viridis(np.linspace(0, 1, runs))
+#
+## Create 3D plot
+#fig = plt.figure(figsize=(8, 8))
+#ax = fig.add_subplot(111, projection='3d')
+#
+## Store legend handles and labels
+#legend_handles = []
+#legend_labels = []
+#
+## For each run in our total number of runs
+#for run in range(1, runs + 1):
+#
+#    # Load the parameter values for that run's Pareto front
+#    pareto_betax = np.load(f"pareto_betax_run{run}.npy", allow_pickle=True)
+#    pareto_betay = np.load(f"pareto_betay_run{run}.npy", allow_pickle=True)
+#    pareto_n = np.load(f"pareto_n_run{run}.npy", allow_pickle=True)
+#    
+#    # Create 3D points from the loaded data
+#    points = np.array(list(zip(pareto_betax, pareto_betay, pareto_n)))
+#    
+#    # Compute the bounding box from the points
+#    min_x, min_y, min_z = np.min(points, axis=0)
+#    max_x, max_y, max_z = np.max(points, axis=0)
+#    
+#    # If only one unique point exists, plot it as a single dot
+#    if np.array_equal([min_x, min_y, min_z], [max_x, max_y, max_z]):
+#        print(f"Plotting a single point for MOSA Run {run} (no bounding box).")
+#        scatter = ax.scatter(min_x, min_y, min_z, color="black", marker="o", s=50)  # Black point
+#        legend_handles.append(scatter)
+#        legend_labels.append(f"Run {run}")
+#        continue  # Skip bounding box creation
+#
+#    # Define the vertices of the rectangular prism
+#    vertices = np.array([
+#        [min_x, min_y, min_z], [max_x, min_y, min_z], [max_x, max_y, min_z], [min_x, max_y, min_z],  # Bottom face
+#        [min_x, min_y, max_z], [max_x, min_y, max_z], [max_x, max_y, max_z], [min_x, max_y, max_z]   # Top face
+#    ])
+#    
+#    # Define the 3D bounding box as a set of six faces
+#    faces = [
+#        [vertices[0], vertices[1], vertices[2], vertices[3]],  # Bottom face
+#        [vertices[4], vertices[5], vertices[6], vertices[7]],  # Top face
+#        [vertices[0], vertices[1], vertices[5], vertices[4]],  # Front face
+#        [vertices[2], vertices[3], vertices[7], vertices[6]],  # Back face
+#        [vertices[1], vertices[2], vertices[6], vertices[5]],  # Right face
+#        [vertices[0], vertices[3], vertices[7], vertices[4]]   # Left face
+#    ]
+#    
+#    # Create the 3D bounding box
+#    color = colors[run - 1]
+#    poly3d = Poly3DCollection(faces, alpha=0.3, facecolor=color, edgecolor='k', linewidths=1)
+#    ax.add_collection3d(poly3d)
+#
+#    # Add to legend
+#    legend_handles.append(poly3d)
+#    legend_labels.append(f"Run {run}")
+#
+## Set labels and limits
+#ax.set_xlabel(r"$\beta_x$")
+#ax.set_ylabel(r"$\beta_y$")
+#ax.set_zlabel(r"$n$")
+#ax.set_title("Bounding Rectangular Prisms for Each MOSA Run")
+#ax.set_xlim([beta_x_min, beta_x_max])
+#ax.set_ylim([beta_y_min, beta_y_max])
+#ax.set_zlim([n_min, n_max])
+#
+## Add legend outside the plot
+#ax.legend(legend_handles, legend_labels, loc="upper left", bbox_to_anchor=(1.05, 1), borderaxespad=0.)
+#
+## Adjust layout to fit legend
+#plt.tight_layout()
+#
+## Show plot
+#plt.savefig('searchspaces_runs.png', dpi=300, bbox_inches="tight")
+#plt.show()

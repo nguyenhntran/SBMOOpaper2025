@@ -2,7 +2,7 @@ import pandas as pd
 import random
 import os
 
-runs = 15
+runs = 10
 csv_file = "df.csv"
 
 # Generate new data

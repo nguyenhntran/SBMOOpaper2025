@@ -1,0 +1,68 @@
+--------------------------------------------
+System information:
+--------------------------------------------
+Circuit choice: posneg
+Number of steady states expected: 1
+Sensitivity function 1: |S_betax_xss|
+Sensitivity function 2: |S_betax_yss|
+--------------------------------------------
+System probing to estimate MOSA run parameters:
+--------------------------------------------
+beta_x values from 0.0 to 10.0 with 10 linspaced samples
+beta_y values from 0.0 to 10.0 with 10 linspaced samples
+n values from 0.0 to 10.0 with 10 linspaced samples
+Min sampled value of |S_betax_xss|: 0.012333944577997582
+Min sampled value of |S_betax_yss|: 0.0
+Max sampled value of |S_betax_xss|: 1.0
+Max sampled value of |S_betax_yss|: 7.372496447034833
+Sampled energy difference in |S_betax_xss|: 0.9876660554220024
+Sampled energy difference in |S_betax_yss|: 7.372496447034833
+Sampled cumulative energy difference: 7.438359234305244
+Chosen probability of transitioning to a higher energy state in hot run: 0.9
+Corresponding hot run tempertaure: 70.59911569209096
+(This temperature will be used to start the inital anneal.)Chosen probability of transitioning to a higher energy state in cold run: 0.01
+Corresponding cold run tempertaure: 1.6152191849364324
+(This temperature will be used to estimate when to end hot run. The actual finishing temperature from the hot run will used for the cold run.)
+--------------------------------------------
+MOSA run parameters:
+--------------------------------------------
+Chosen number of MOSA runs: 2
+Chosen number of random walks per run: 100
+
+MOSA RUN NUMBER 1:
+
+Random seed value for 1: 0.5488135039273248
+
+HOT RUN NO. 1:
+Hot run time: 34.89102101325989 seconds
+Hot run stopping temperature = cold run starting temperature: 1.6696384876302541
+Number of temperatures: 74
+Step scaling factor: 0.01
+
+COLD RUN NO. 1:
+Cold run time: 40.88912606239319 seconds
+Cold run stopping temperature: 4.9275482075572866e-05
+
+PRUNE NO. 1:
+Prune time: 0.012910127639770508 seconds
+Archive length after cold run: 85
+Archive length after prune: 61
+
+MOSA RUN NUMBER 2:
+
+Random seed value for 2: 0.417022004702574
+
+HOT RUN NO. 2:
+Hot run time: 1.922609806060791 seconds
+Hot run stopping temperature = cold run starting temperature: 1.6696384876302541
+Number of temperatures: 74
+Step scaling factor: 0.01
+
+COLD RUN NO. 2:
+Cold run time: 40.67723488807678 seconds
+Cold run stopping temperature: 4.9275482075572866e-05
+
+PRUNE NO. 2:
+Prune time: 0.006269931793212891 seconds
+Archive length after cold run: 1
+Archive length after prune: 1
