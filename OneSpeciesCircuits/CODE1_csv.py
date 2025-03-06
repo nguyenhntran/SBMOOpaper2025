@@ -523,7 +523,7 @@ mosa_data = pd.DataFrame({
 })
 
 file_exists = os.path.exists(output_file)
-mosa_data.to_csv(output_file, mode='a', index=False, header=not file_exists)
+mosa_data.to_csv(f'../{output_file}', mode='a', index=False, header=not file_exists)
 
 print(f"Appended new data to {output_file}")
 

@@ -14,18 +14,14 @@ import json
 import mosa
 import matplotlib.pyplot as plt
 import pyvista as pv
-import gc
-from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
 from scipy.optimize import fsolve
-from math import inf
 from numpy import random
-from scipy.spatial import ConvexHull, Delaunay
 
 # Name for text file to records stats
-output_file = f"MosaStats.txt"
+output_file = "TwoSpecies.txt"
 
 
 # -------------- PART 0: CHOOSE CIRCUIT AND SET UP FOLDER --------------
