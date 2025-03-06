@@ -21,7 +21,7 @@ from scipy.optimize import fsolve
 from numpy import random
 
 # Name for text file to records stats
-output_file = "TwoSpecies.txt"
+output_file = f"MosaStats.txt"
 
 
 # -------------- PART 0: CHOOSE CIRCUIT AND SET UP FOLDER --------------
