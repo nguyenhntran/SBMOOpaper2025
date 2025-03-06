@@ -15,6 +15,8 @@ import pyvista as pv
 import gc
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+import matplotlib.patches as mpatches
+import matplotlib.lines as mlines
 from scipy.optimize import fsolve
 from math import inf
 from numpy import random
@@ -628,83 +630,84 @@ for run in range(runs):
 
 # -------------- PART 3a: VISUALISE EACH MOSA RECTANGULAR BOUNDS --------------
 
-## Print prompt
-#print("Plotting rectangular prism bounds for each MOSA run...")
-#
-## Create a colormap
-#colors = plt.cm.viridis(np.linspace(0, 1, runs))
-#
-## Create 3D plot
-#fig = plt.figure(figsize=(8, 8))
-#ax = fig.add_subplot(111, projection='3d')
-#
-## Store legend handles and labels
-#legend_handles = []
-#legend_labels = []
-#
-## For each run in our total number of runs
-#for run in range(1, runs + 1):
-#
-#    # Load the parameter values for that run's Pareto front
-#    pareto_betax = np.load(f"pareto_betax_run{run}.npy", allow_pickle=True)
-#    pareto_betay = np.load(f"pareto_betay_run{run}.npy", allow_pickle=True)
-#    pareto_n = np.load(f"pareto_n_run{run}.npy", allow_pickle=True)
-#    
-#    # Create 3D points from the loaded data
-#    points = np.array(list(zip(pareto_betax, pareto_betay, pareto_n)))
-#    
-#    # Compute the bounding box from the points
-#    min_x, min_y, min_z = np.min(points, axis=0)
-#    max_x, max_y, max_z = np.max(points, axis=0)
-#    
-#    # If only one unique point exists, plot it as a single dot
-#    if np.array_equal([min_x, min_y, min_z], [max_x, max_y, max_z]):
-#        print(f"Plotting a single point for MOSA Run {run} (no bounding box).")
-#        scatter = ax.scatter(min_x, min_y, min_z, color="black", marker="o", s=50)  # Black point
-#        legend_handles.append(scatter)
-#        legend_labels.append(f"Run {run}")
-#        continue  # Skip bounding box creation
-#
-#    # Define the vertices of the rectangular prism
-#    vertices = np.array([
-#        [min_x, min_y, min_z], [max_x, min_y, min_z], [max_x, max_y, min_z], [min_x, max_y, min_z],  # Bottom face
-#        [min_x, min_y, max_z], [max_x, min_y, max_z], [max_x, max_y, max_z], [min_x, max_y, max_z]   # Top face
-#    ])
-#    
-#    # Define the 3D bounding box as a set of six faces
-#    faces = [
-#        [vertices[0], vertices[1], vertices[2], vertices[3]],  # Bottom face
-#        [vertices[4], vertices[5], vertices[6], vertices[7]],  # Top face
-#        [vertices[0], vertices[1], vertices[5], vertices[4]],  # Front face
-#        [vertices[2], vertices[3], vertices[7], vertices[6]],  # Back face
-#        [vertices[1], vertices[2], vertices[6], vertices[5]],  # Right face
-#        [vertices[0], vertices[3], vertices[7], vertices[4]]   # Left face
-#    ]
-#    
-#    # Create the 3D bounding box
-#    color = colors[run - 1]
-#    poly3d = Poly3DCollection(faces, alpha=0.3, facecolor=color, edgecolor='k', linewidths=1)
-#    ax.add_collection3d(poly3d)
-#
-#    # Add to legend
-#    legend_handles.append(poly3d)
-#    legend_labels.append(f"Run {run}")
-#
-## Set labels and limits
-#ax.set_xlabel(r"$\beta_x$")
-#ax.set_ylabel(r"$\beta_y$")
-#ax.set_zlabel(r"$n$")
-#ax.set_title("Bounding Rectangular Prisms for Each MOSA Run")
-#ax.set_xlim([beta_x_min, beta_x_max])
-#ax.set_ylim([beta_y_min, beta_y_max])
-#ax.set_zlim([n_min, n_max])
-#
-## Add legend outside the plot
-#ax.legend(legend_handles, legend_labels, loc="upper left", bbox_to_anchor=(1.05, 1), borderaxespad=0.)
-#
-## Adjust layout to fit legend
-#plt.tight_layout()
-#
-## Show plot
-#plt.savefig('searchspaces_runs.png', dpi=300, bbox_inches="tight")
-#plt.show()
+# Create a colormap
+colors = plt.cm.viridis(np.linspace(0, 1, runs))
+colors
+
+# Create 3D plot
+fig = plt.figure(figsize=(8, 8))
+ax = fig.add_subplot(111, projection='3d')
+
+# Store legend handles and labels
+legend_handles = []
+legend_labels = []
+
+# For each run in our total number of runs
+for run in range(1, runs + 1):
+
+    # Load the parameter values for that run's Pareto front
+    pareto_betax = np.load(f"pareto_betax_run{run}.npy", allow_pickle=True)
+    pareto_betay = np.load(f"pareto_betay_run{run}.npy", allow_pickle=True)
+    pareto_n = np.load(f"pareto_n_run{run}.npy", allow_pickle=True)
+    
+    # Create 3D points from the loaded data
+    points = np.array(list(zip(pareto_betax, pareto_betay, pareto_n)))
+    
+    # Compute the bounding box from the points
+    min_x, min_y, min_z = np.min(points, axis=0)
+    max_x, max_y, max_z = np.max(points, axis=0)
+    
+    # Assign a unique color for this run
+    color = colors[run - 1]
+
+    # If only one unique point exists, plot it as a single dot in the same color as the bounding box
+    if np.array_equal([min_x, min_y, min_z], [max_x, max_y, max_z]):
+        print(f"Plotting a single point for MOSA Run {run} (no bounding box).")
+        scatter = ax.scatter(min_x, min_y, min_z, color=color, marker="o", s=10)
+        legend_handles.append(mlines.Line2D([], [], color=color, marker="o", linestyle="None", markersize=6))
+        legend_labels.append(f"Run {run} (Single Point)")
+        # Skip bounding box creation
+        continue
+
+    # Define the vertices of the rectangular prism
+    vertices = np.array([
+        [min_x, min_y, min_z], [max_x, min_y, min_z], [max_x, max_y, min_z], [min_x, max_y, min_z],  # Bottom face
+        [min_x, min_y, max_z], [max_x, min_y, max_z], [max_x, max_y, max_z], [min_x, max_y, max_z]   # Top face
+    ])
+    
+    # Define the 3D bounding box as a set of six faces
+    faces = [
+        [vertices[0], vertices[1], vertices[2], vertices[3]],  # Bottom face
+        [vertices[4], vertices[5], vertices[6], vertices[7]],  # Top face
+        [vertices[0], vertices[1], vertices[5], vertices[4]],  # Front face
+        [vertices[2], vertices[3], vertices[7], vertices[6]],  # Back face
+        [vertices[1], vertices[2], vertices[6], vertices[5]],  # Right face
+        [vertices[0], vertices[3], vertices[7], vertices[4]]   # Left face
+    ]
+    
+    # Create the 3D bounding box
+    poly3d = Poly3DCollection(faces, alpha=0.3, facecolor=color, edgecolor='k', linewidths=1)
+    ax.add_collection3d(poly3d)
+
+    # Add to legend using a Patch with unique color
+    legend_handles.append(mpatches.Patch(facecolor=color, edgecolor="black"))
+    legend_labels.append(f"Run {run}")
+
+# Set labels and limits
+ax.set_xlabel(r"$\beta_x$")
+ax.set_ylabel(r"$\beta_y$")
+ax.set_zlabel(r"$n$")
+ax.set_title("Bounding Rectangular Prisms for Each MOSA Run")
+ax.set_xlim([0.01, 50])
+ax.set_ylim([0.01, 50])
+ax.set_zlim([0.01, 10])
+
+# Add legend outside the plot
+ax.legend(legend_handles, legend_labels, loc="upper left", bbox_to_anchor=(1.05, 1), borderaxespad=0.)
+
+# Adjust layout to fit legend
+plt.tight_layout()
+
+# Show plot
+plt.savefig('searchspaces_runs.png', dpi=300, bbox_inches="tight")
+plt.show()
