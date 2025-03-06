@@ -17,6 +17,13 @@ for run in range(1, runs + 1):
     prune.append(random.random())
 
 # Create a DataFrame for the new data
+print({
+    'runs': [runs],
+    'hot': [hot],
+    'cold': [cold],
+    'prune': [prune]
+})
+
 new_data = pd.DataFrame({
     'runs': [runs],
     'hot': [hot],
