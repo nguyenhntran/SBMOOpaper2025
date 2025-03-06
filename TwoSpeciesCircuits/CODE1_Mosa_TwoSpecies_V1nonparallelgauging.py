@@ -7,6 +7,8 @@
 import importlib
 import os
 import time
+from tqdm import tqdm
+import itertools
 import numpy as np
 import json
 import mosa
@@ -253,6 +255,10 @@ def fobj(solution):
     sens1, sens2 = senpair(xss_collect, yss_collect, solution["beta_x"], solution["beta_y"], solution["n"], choice1, choice2)
     ans1 = float(sens1)
     ans2 = float(sens2)
+    
+    # Check for NaN values before returning
+    if np.isnan(ans1) or np.isnan(ans2):
+        return np.inf, np.inf
     return ans1, ans2
     
 
@@ -301,19 +307,39 @@ yss_samps = np.array([])
 sens1_samps = np.array([])
 sens2_samps = np.array([])
 
-# For each combination of parameters
-for i in beta_x_samps:
-    for j in beta_x_samps:
-        for k in n_samps:
-            
-            # Get steady states and store
-            xss, yss = ssfinder(i,j,k)
-            xss_samps = np.append(xss_samps,xss)
-            yss_samps = np.append(yss_samps,yss)
-            # Get sensitivities and store
-            sens1, sens2 = senpair(xss, yss, i, j, k, choice1, choice2)
-            sens1_samps = np.append(sens1_samps,sens1)
-            sens2_samps = np.append(sens2_samps,sens2)
+
+
+# WITH LOADING BAR 
+# Compute the total number of iterations for tqdm
+total_iterations = len(beta_x_samps) * len(beta_x_samps) * len(n_samps)
+# Loop over every combination of parameters with a progress bar
+for i, j, k in tqdm(itertools.product(beta_x_samps, beta_x_samps, n_samps), total=total_iterations, desc="Gauging energies:"):
+    # Get steady states and store
+        xss, yss = ssfinder(i, j, k)
+        xss_samps = np.append(xss_samps, xss)
+        yss_samps = np.append(yss_samps, yss)
+        # Get sensitivities and store
+        sens1, sens2 = senpair(xss, yss, i, j, k, choice1, choice2)
+        sens1_samps = np.append(sens1_samps, sens1)
+        sens2_samps = np.append(sens2_samps, sens2)
+
+
+
+# WITHOUT LOADING BAR 
+## For each combination of parameters
+#for i in beta_x_samps:
+#    for j in beta_x_samps:
+#        for k in n_samps:
+#            # Get steady states and store
+#            xss, yss = ssfinder(i,j,k)
+#            xss_samps = np.append(xss_samps,xss)
+#            yss_samps = np.append(yss_samps,yss)
+#            # Get sensitivities and store
+#            sens1, sens2 = senpair(xss, yss, i, j, k, choice1, choice2)
+#            sens1_samps = np.append(sens1_samps,sens1)
+#            sens2_samps = np.append(sens2_samps,sens2)
+
+
 
 # Get min and max of each sensitivity and print
 sens1_samps_min = np.nanmin(sens1_samps)

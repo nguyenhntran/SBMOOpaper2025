@@ -1,0 +1,125 @@
+--------------------------------------------
+System information:
+--------------------------------------------
+Circuit choice: posneg
+Number of steady states expected: 1
+Sensitivity function 1: |S_betax_xss|
+Sensitivity function 2: |S_betax_yss|
+--------------------------------------------
+System probing to estimate MOSA run parameters:
+--------------------------------------------
+beta_x values from 0.01 to 50.0 with 20 linspaced samples
+beta_y values from 0.01 to 50.0 with 20 linspaced samples
+n values from 0.01 to 10.0 with 20 linspaced samples
+Min sampled value of |S_betax_xss|: 0.010355118328119431
+Min sampled value of |S_betax_yss|: 0.005006860137112709
+Max sampled value of |S_betax_xss|: 0.9999753665903779
+Max sampled value of |S_betax_yss|: 2.0648677759515954
+Sampled energy difference in |S_betax_xss|: 0.9896202482622585
+Sampled energy difference in |S_betax_yss|: 2.059860915814483
+Sampled cumulative energy difference: 2.2852516772274196
+Chosen probability of transitioning to a higher energy state in hot run: 0.9
+Corresponding hot run tempertaure: 21.689830036985658
+(This temperature will be used to start the inital anneal.)Chosen probability of transitioning to a higher energy state in cold run: 0.01
+Corresponding cold run tempertaure: 0.49623609659000967
+(This temperature will be used to estimate when to end hot run. The actual finishing temperature from the hot run will used for the cold run.)
+--------------------------------------------
+MOSA run parameters:
+--------------------------------------------
+Chosen number of MOSA runs: 5
+Chosen number of random walks per run: 100
+
+MOSA RUN NUMBER 1:
+
+Random seed value for 1: 0.5488135039273248
+
+HOT RUN NO. 1:
+Hot run time: 35.120057821273804 seconds
+Hot run stopping temperature = cold run starting temperature: 0.5129550797470821
+Number of temperatures: 74
+Step scaling factor: 0.01
+
+COLD RUN NO. 1:
+Cold run time: 42.5094952583313 seconds
+Cold run stopping temperature: 1.5138671649529472e-05
+
+PRUNE NO. 1:
+Prune time: 0.009656906127929688 seconds
+Archive length after cold run: 55
+Archive length after prune: 32
+
+MOSA RUN NUMBER 2:
+
+Random seed value for 2: 0.417022004702574
+
+HOT RUN NO. 2:
+Hot run time: 2.0239369869232178 seconds
+Hot run stopping temperature = cold run starting temperature: 0.5129550797470821
+Number of temperatures: 74
+Step scaling factor: 0.01
+
+COLD RUN NO. 2:
+Cold run time: 38.244596004486084 seconds
+Cold run stopping temperature: 1.5138671649529472e-05
+
+PRUNE NO. 2:
+Prune time: 0.006167888641357422 seconds
+Archive length after cold run: 1
+Archive length after prune: 1
+
+MOSA RUN NUMBER 3:
+
+Random seed value for 3: 0.43599490214200376
+
+HOT RUN NO. 3:
+Hot run time: 34.89993691444397 seconds
+Hot run stopping temperature = cold run starting temperature: 0.5129550797470821
+Number of temperatures: 74
+Step scaling factor: 0.01
+
+COLD RUN NO. 3:
+Cold run time: 42.393420934677124 seconds
+Cold run stopping temperature: 1.5138671649529472e-05
+
+PRUNE NO. 3:
+Prune time: 0.007978200912475586 seconds
+Archive length after cold run: 93
+Archive length after prune: 63
+
+MOSA RUN NUMBER 4:
+
+Random seed value for 4: 0.5507979025745755
+
+HOT RUN NO. 4:
+Hot run time: 34.70374608039856 seconds
+Hot run stopping temperature = cold run starting temperature: 0.5129550797470821
+Number of temperatures: 74
+Step scaling factor: 0.01
+
+COLD RUN NO. 4:
+Cold run time: 42.28561210632324 seconds
+Cold run stopping temperature: 1.5138671649529472e-05
+
+PRUNE NO. 4:
+Prune time: 0.008807897567749023 seconds
+Archive length after cold run: 65
+Archive length after prune: 52
+
+MOSA RUN NUMBER 5:
+
+Random seed value for 5: 0.9670298390136767
+
+HOT RUN NO. 5:
+Hot run time: 33.236653089523315 seconds
+Hot run stopping temperature = cold run starting temperature: 0.5129550797470821
+Number of temperatures: 74
+Step scaling factor: 0.01
+
+COLD RUN NO. 5:
+Cold run time: 42.439430952072144 seconds
+Cold run stopping temperature: 1.5138671649529472e-05
+
+PRUNE NO. 5:
+Prune time: 0.013698816299438477 seconds
+Archive length after cold run: 115
+Archive length after prune: 74
