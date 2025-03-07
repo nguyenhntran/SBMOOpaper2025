@@ -114,6 +114,9 @@ os.chdir(subfolder_name)
 # Prompt new folder name
 print(f"Current working directory: {os.getcwd()}")
 
+if not os.path.exists('data'):
+    os.makedirs('data')
+
 # -------------- PART 0f: DEFINE FUNCTIONS --------------
 
 
@@ -386,7 +389,7 @@ for run in range(runs):
     plt.ylabel(label2)
     plt.grid(True)
     plt.title(f'Unpruned MOSA Pareto Sensitivities - Run No. {run + 1}')
-    plt.savefig(f'unpruned_pareto_sensitivities_run_{run + 1}.png', dpi=300)
+    plt.savefig(f'data/unpruned_pareto_sensitivities_run_{run + 1}.png', dpi=300)
     plt.close()
     
 	
@@ -408,23 +411,23 @@ for run in range(runs):
     plt.ylabel('n')
     plt.grid(True)
     plt.title(f'Unpruned MOSA Pareto Parameters - Run No. {run + 1}')
-    plt.savefig(f'unpruned_pareto_parameters_run_{run + 1}.png', dpi=300)
+    plt.savefig(f'data/unpruned_pareto_parameters_run_{run + 1}.png', dpi=300)
     plt.close()
 
     # -------------- PART 2e: SAVE PARETO DATA FROM CURRENT RUN --------------
 
     # Save S_a annealed values
     filename = f"annealed_Salpha_run{run+1}.npy"
-    np.save(filename,annealed_Salpha)
+    np.save(f'data/{filename}',annealed_Salpha)
     # Save S_n annealed values
     filename = f"annealed_Sn_run{run+1}.npy"
-    np.save(filename,annealed_Sn)
+    np.save(f'data/{filename}',annealed_Sn)
     # Save a annealed values
     filename = f"annealed_alpha_run{run+1}.npy"
-    np.save(filename,annealed_alpha)
+    np.save(f'data/{filename}',annealed_alpha)
     # Save n annealed values
     filename = f"annealed_n_run{run+1}.npy"
-    np.save(filename,annealed_n)
+    np.save(f'data/{filename}',annealed_n)
 
     # -------------- PART 2f: STORE AND PLOT PRUNED PARETO FRONT IN SENSITIVITY SPACE --------------
 	
@@ -454,7 +457,7 @@ for run in range(runs):
     plt.ylabel(label2)
     plt.grid(True)
     plt.title(f'Pruned MOSA Pareto Sensitivities - Run No. {run + 1}')
-    plt.savefig(f'pruned_pareto_sensitivities_run_{run + 1}.png', dpi=300)
+    plt.savefig(f'data/pruned_pareto_sensitivities_run_{run + 1}.png', dpi=300)
     plt.close()
     
 	
@@ -476,23 +479,23 @@ for run in range(runs):
     plt.ylabel('n')
     plt.grid(True)
     plt.title(f'Pruned MOSA Pareto Parameters - Run No. {run + 1}')
-    plt.savefig(f'pruned_pareto_parameters_run_{run + 1}.png', dpi=300)
+    plt.savefig(f'data/pruned_pareto_parameters_run_{run + 1}.png', dpi=300)
     plt.close()
 
     # -------------- PART 2e: SAVE PARETO DATA FROM CURRENT RUN --------------
 
     # Save S_a pareto values
     filename = f"pareto_Salpha_run{run+1}.npy"
-    np.save(filename,pareto_Salpha)
+    np.save(f'data/{filename}',pareto_Salpha)
     # Save S_n pareto values
     filename = f"pareto_Sn_run{run+1}.npy"
-    np.save(filename,pareto_Sn)
+    np.save(f'data/{filename}',pareto_Sn)
     # Save a pareto values
     filename = f"pareto_alpha_run{run+1}.npy"
-    np.save(filename,pareto_alpha)
+    np.save(f'data/{filename}',pareto_alpha)
     # Save n pareto values
     filename = f"pareto_n_run{run+1}.npy"
-    np.save(filename,pareto_n)
+    np.save(f'data/{filename}',pareto_n)
     
 # -------------- PART 2f: SAVE DATA -------------------------------------------
 
@@ -523,7 +526,7 @@ mosa_data = pd.DataFrame({
 })
 
 file_exists = os.path.exists(output_file)
-mosa_data.to_csv(f'../{output_file}', mode='a', index=False, header=not file_exists)
+mosa_data.to_csv(output_file, mode='a', index=False, header=not file_exists)
 
 print(f"Appended new data to {output_file}")
 
@@ -542,8 +545,8 @@ fig, ax = plt.subplots(figsize=(6, 6))
 for run in range(1, runs + 1):
 
     # Load the parameter values for that run's Pareto front
-    pareto_alpha = np.load(f"pareto_alpha_run{run}.npy", allow_pickle=True)
-    pareto_n = np.load(f"pareto_n_run{run}.npy", allow_pickle=True)
+    pareto_alpha = np.load(f"data/pareto_alpha_run{run}.npy", allow_pickle=True)
+    pareto_n = np.load(f"data/pareto_n_run{run}.npy", allow_pickle=True)
     
     # Create 2D points from the loaded data
     points = np.array(list(zip(pareto_alpha, pareto_n)))
@@ -577,5 +580,5 @@ ax.set_ylim([n_min, n_max])
 ax.legend()
 
 # Save the figure and close
-plt.savefig('searchspaces_runs.png', dpi=300)
+plt.savefig('data/searchspaces_runs.png', dpi=300)
 plt.close()
