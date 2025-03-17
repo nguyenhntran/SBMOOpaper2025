@@ -4,6 +4,7 @@ import ast
 import os
 import re
 import numpy as np
+import itertools
 
 species = {
     1: "OneSpecies",
@@ -73,16 +74,17 @@ def plot(yaxis, df, ax, index):
         y_cold = df[cols[20]].apply(conditional_literal_eval)
         y_prune = df[cols[22]].apply(conditional_literal_eval)
         y = [np.array(h) + np.array(c) + np.array(p) 
-                 for h, c, p in zip(y_hot, y_cold, y_prune)]
+                 for h, c, p in zip(y_hot, y_cold, y_prune)][0]
+        y = list(itertools.accumulate(y))
     else:
-        y = np.array(df[cols[ycol[0]]].apply(conditional_literal_eval))
+        y = np.array(df[cols[ycol[0]]].apply(conditional_literal_eval))[0]
 
-    ax[index].plot(x, y[0])
+    ax[index].plot(x, y)
     ax[index].set_xlabel("Runs")
     ax[index].set_ylabel(f"{yaxis}")
     ax[index].set_title(f"Runs vs {yaxis}")
 
 plot("Running Time", df, ax, 0)
-plot("Pareto Points", df, ax, 1)
+plot("Data Points", df, ax, 1)
 
 plt.show()
