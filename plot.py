@@ -91,7 +91,7 @@ for i, pair in enumerate(pairs):
             x = range(1, df[cols[var1-1]][0]+1)
         elif is_single_number_or_single_element(y):           # Runs
             y = range(1, df[cols[var2-1]][0]+1)
-        ax[i].plot(x, y, label=f"{cols[var1-1]} vs {cols[var2-1]}")
+        ax[i].plot(x, y, label=f"{cols[var1-1]} vs {cols[var2-1]}", linestyle='-')
     ax[i].set_xlabel(f"{cols[var1-1]}")
     ax[i].set_ylabel(f"{cols[var2-1]}")
 
