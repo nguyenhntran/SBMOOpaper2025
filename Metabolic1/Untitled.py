@@ -26,7 +26,7 @@ import pandas as pd
 
 
 # Choose circuit
-circuit = "metab1"
+circuit = "metabolic1"
 
 # Import circuit config file
 config = importlib.import_module(circuit)
@@ -76,6 +76,11 @@ We have the following sensitivity functions:
 3. |S_kE2_S2|
 4. |S_kE1_ATP|
 5. |S_kE2_ATP|
+
+To MOSa for Pareto front of:
+Sensitivity of Product Yield to Reaction Rates k_{E1}, k_{E2} --- choose 0 and 1.
+Sensitivity of Intermediate Metabolite S2 to Reaction Rates k_{E1}, k_{E2}  --- choose 2 and 3.
+Sensitivity of ATP Consumption to Reaction Rates k_{E1}, k_{E2}  --- choose 4 and 5.
 """)
 
 # Choose pair of functions
@@ -134,8 +139,10 @@ def ssfinder(rS1_val, kS1_val, kS2_val, kP_val, kE1_val, kE2_val, alphaE_val, ga
         Pss_prime = - Pss
         ATPss = (alphaE_val/gammaE_val)*(kS1_val/rS1_val) * (kE1_val + kE2_val*(kE1_val/kS2_val)*(alphaE_val/gammaE_val))
         ATPss_prime = ATPss
+        Ess = 2 * alphaE_val/gammaE_val
+        Ess_prime = Ess
         
-        return S2ss_prime, Pss_prime, ATPss_prime
+        return S2ss_prime, Pss_prime, ATPss_prime, Ess_prime
         
 # DEFINE FUNCTION THAT RETURNS PAIR OF SENSITIVITIES
 def senpair(rS1_val, kS1_val, kS2_val, kP_val, kE1_val, kE2_val, alphaE_val, gammaE_val, choice1, choice2):
@@ -171,9 +178,6 @@ def senpair(rS1_val, kS1_val, kS2_val, kP_val, kE1_val, kE2_val, alphaE_val, gam
 
 # DEFINE OBJECTIVE FUNCTION TO ANNEAL
 def fobj(solution):
-
-    print("solution")
-    print(solution)
 	
 	# Update parameter set
     rS1_val = solution["rS1"]
@@ -186,7 +190,7 @@ def fobj(solution):
     gammaE_val = solution["gammaE"]
 
     # Find steady states and store.
-    S2ss_prime, Pss_prime, ATPss_prime = ssfinder(rS1_val, kS1_val, kS2_val, kP_val, kE1_val, kE2_val, alphaE_val, gammaE_val)
+    S2ss_prime, Pss_prime, ATPss_prime, Ess_prime = ssfinder(rS1_val, kS1_val, kS2_val, kP_val, kE1_val, kE2_val, alphaE_val, gammaE_val)
 
     # Get sensitivity pair
     sens1, sens2 = senpair(rS1_val, kS1_val, kS2_val, kP_val, kE1_val, kE2_val, alphaE_val, gammaE_val, choice1, choice2)
@@ -194,7 +198,7 @@ def fobj(solution):
     ans2 = float(sens2)
     
     # Return the quantities to be minimised by MOSA
-    return S2ss_prime, Pss_prime, ATPss_prime, ans1, ans2
+    return S2ss_prime, Pss_prime, ATPss_prime, Ess_prime, ans1, ans2
 
 
 # -------------- PART 1: GAUGING MOSA PARAMETERS --------------
@@ -254,6 +258,7 @@ gammaE_samps = np.linspace(gammaE_min, gammaE_max, gammaE_sampsize)
 S2ss_prime_samps = np.array([])
 Pss_prime_samps = np.array([])
 ATPss_prime_samps = np.array([])
+Ess_prime_samps = np.array([])
 # ... sensitivities
 sens1_samps = np.array([])
 sens2_samps = np.array([])
@@ -268,11 +273,12 @@ total_iterations = rS1_sampsize * kS1_sampsize * kS2_sampsize * kP_sampsize * kE
 for i, j, k, l, m, n, o, p in tqdm(itertools.product(rS1_samps, kS1_samps, kS2_samps, kP_samps, kE1_samps, kE2_samps, alphaE_samps, gammaE_samps), total=total_iterations, desc="Gauging energies:"):
     
     # Get steady states and store
-        S2ss_prime, Pss_prime, ATPss_prime = ssfinder(i, j, k, l, m, n, o, p)
+        S2ss_prime, Pss_prime, ATPss_prime, Ess_prime = ssfinder(i, j, k, l, m, n, o, p)
         
         S2ss_prime_samps = np.append(S2ss_prime_samps, S2ss_prime)
         Pss_prime_samps = np.append(Pss_prime_samps, Pss_prime)
         ATPss_prime_samps = np.append(ATPss_prime_samps, ATPss_prime)
+        Ess_prime_samps = np.append(Ess_prime_samps, Ess_prime)
 
         # Get sensitivities and store
         sens1, sens2 = senpair(i, j, k, l, m, n, o, p, choice1, choice2)
@@ -284,12 +290,14 @@ for i, j, k, l, m, n, o, p in tqdm(itertools.product(rS1_samps, kS1_samps, kS2_s
 S2ss_prime_samps_min = np.nanmin(S2ss_prime_samps)
 Pss_prime_samps_min = np.nanmin(Pss_prime_samps)
 ATPss_prime_samps_min = np.nanmin(ATPss_prime_samps)
+Ess_prime_samps_min = np.nanmin(Ess_prime_samps)
 sens1_samps_min = np.nanmin(sens1_samps)
 sens2_samps_min = np.nanmin(sens2_samps)
 
 S2ss_prime_samps_max = np.nanmax(S2ss_prime_samps)
 Pss_prime_samps_max = np.nanmax(Pss_prime_samps)
 ATPss_prime_samps_max = np.nanmax(ATPss_prime_samps)
+Ess_prime_samps_max = np.nanmax(Ess_prime_samps)
 sens1_samps_max = np.nanmax(sens1_samps)
 sens2_samps_max = np.nanmax(sens2_samps)
 
@@ -298,11 +306,12 @@ sens2_samps_max = np.nanmax(sens2_samps)
 deltaE_S2ss_prime = abs(S2ss_prime_samps_max - S2ss_prime_samps_min)
 deltaE_Pss_prime = abs(Pss_prime_samps_max - Pss_prime_samps_min)
 deltaE_ATPss_prime = abs(ATPss_prime_samps_max - ATPss_prime_samps_min)
+deltaE_Ess_prime = abs(Ess_prime_samps_max - Ess_prime_samps_min)
 
 deltaE_sens1 = abs(sens1_samps_max - sens1_samps_min)
 deltaE_sens2 = abs(sens2_samps_max - sens2_samps_min)
 
-deltaE = np.linalg.norm([deltaE_S2ss_prime, deltaE_Pss_prime, deltaE_ATPss_prime, deltaE_sens1, deltaE_sens2])
+deltaE = np.linalg.norm([deltaE_S2ss_prime, deltaE_Pss_prime, deltaE_ATPss_prime, deltaE_Ess_prime, deltaE_sens1, deltaE_sens2])
 
 
 # Get hot temperature
@@ -321,7 +330,7 @@ temp_cold = deltaE / np.log(1/probability_cold)
 
 # Print prompts
 print("Now preparing to MOSA...")
-runs = int(3)
+runs = int(2)
 iterations = int(100)
 
 hotrun_time = []
@@ -343,6 +352,7 @@ for run in range(runs):
     annealed_S2ss_prime  = []
     annealed_Pss_prime   = []
     annealed_ATPss_prime = []
+    annealed_Ess_prime = []
     annealed_sensfunc1   = []
     annealed_sensfunc2   = []
     
@@ -360,6 +370,7 @@ for run in range(runs):
     pareto_S2ss_prime  = []
     pareto_Pss_prime   = []
     pareto_ATPss_prime = []
+    pareto_Ess_prime = []
     pareto_sensfunc1   = []
     pareto_sensfunc2   = []
     
@@ -451,8 +462,8 @@ for run in range(runs):
     values = data["Values"]
     
     # Split the values into two lists
-    value_1 = [v[0] for v in values]
-    value_2 = [v[1] for v in values]
+    value_1 = [v[4] for v in values]
+    value_2 = [v[5] for v in values]
     
     # Add parameter values to collections
     for dummy1, dummy2 in zip(value_1, value_2):
@@ -471,7 +482,7 @@ for run in range(runs):
     
     # -------------- PART 2d: STORE AND PLOT CORRESPONDING POINTS IN PARAMETER SPACE --------------
     
-    # Extract beta_x, beta_y and n values from the solutions
+    # Extract parameter values from the solutions
     rS1_values = [solution["rS1"] for solution in data["Solution"]]
     kS1_values = [solution["kS1"] for solution in data["Solution"]]
     kS2_values = [solution["kS2"] for solution in data["Solution"]]
@@ -482,7 +493,7 @@ for run in range(runs):
     gammaE_values = [solution["gammaE"] for solution in data["Solution"]]
     
     # Add parameter values to collections
-    for dummy1, dummy2, dummy3, dummy4, dummy5, dummy6, dummy7, dummy8 in zip( , , , , , , , ):
+    for dummy1, dummy2, dummy3, dummy4, dummy5, dummy6, dummy7, dummy8 in zip(rS1_values, kS1_values, kS2_values, kP_values, kE1_values, kE2_values, alphaE_values, gammaE_values):
         annealed_rS1.append(dummy1)
         annealed_kS1.append(dummy2)
         annealed_kS2.append(dummy3)
@@ -493,6 +504,227 @@ for run in range(runs):
         annealed_gammaE.append(dummy8)
         
     # Create a figure with 8 1D scatter plots
+    
+    params = {
+        "rS1": annealed_rS1,
+        "kS1": annealed_kS1,
+        "kS2": annealed_kS2,
+        "kP": annealed_kP,
+        "kE1": annealed_kE1,
+        "kE2": annealed_kE2,
+        "alphaE": annealed_alphaE,
+        "gammaE": annealed_gammaE,
+    }
+    
+    fig, axes = plt.subplots(len(params), 1, figsize=(8, 12), sharex=False)
+    
+    for i, (param_name, values) in enumerate(params.items()):
+        axes[i].scatter(values, [i] * len(values), alpha=0.6)
+        axes[i].set_ylabel(param_name)
+        axes[i].set_yticks([i])
+        axes[i].set_yticklabels([param_name])
+    
+    plt.xlabel("Parameter Values")
+    plt.title(f'Unpruned MOSA Pareto Parameters - Run No. {run + 1}')
+    plt.savefig(f'data/unpruned_pareto_parameters_run_{run + 1}.png', dpi=300)
+    plt.tight_layout()
+    plt.close()
+    
+    # -------------- PART 2e: SAVE PARETO DATA FROM CURRENT RUN --------------
+
+    # Save sensitivity function 1 annealed values
+    filename = f"annealed_sensfunc1_run{run+1}.npy"
+    np.save(f'data/{filename}',annealed_sensfunc1)
+    # Save sensitivity function 2 annealed values
+    filename = f"annealed_sensfunc2_run{run+1}.npy"
+    np.save(f'data/{filename}',annealed_sensfunc2)
+    # Save rS1 annealed values
+    filename = f"annealed_rS1_run{run+1}.npy"
+    np.save(f'data/{filename}',annealed_rS1)
+    # Save kS1 annealed values
+    filename = f"kS1_values_run{run+1}.npy"
+    np.save(f'data/{filename}',annealed_kS1)
+    # Save kS2 annealed values
+    filename = f"kS2_values_run{run+1}.npy"
+    np.save(f'data/{filename}',annealed_kS2)
+    # Save kP annealed values
+    filename = f"kP_values_run{run+1}.npy"
+    np.save(f'data/{filename}',annealed_kP)
+    # Save kE1 annealed values
+    filename = f"kE1_values_run{run+1}.npy"
+    np.save(f'data/{filename}',annealed_kE1)
+    # Save kE2 annealed values
+    filename = f"kE2_values_run{run+1}.npy"
+    np.save(f'data/{filename}',annealed_kE2)
+    # Save alphaE annealed values
+    filename = f"alphaE_values_run{run+1}.npy"
+    np.save(f'data/{filename}',annealed_alphaE)
+    # Save gammaE annealed values
+    filename = f"gammaE_values_run{run+1}.npy"
+    np.save(f'data/{filename}',annealed_gammaE)
+    
+    # -------------- PART 2f: STORE AND PLOT PRUNED PARETO FRONT IN SENSITIVITY SPACE --------------
+	
+    data = pruned
+        
+    # Check archive length
+    length = len([solution["rS1"] for solution in data["Solution"]])
+
+    # Record stats
+    archive_prune_len.append(length)
+    
+    # Extract the "Values" coordinates (pairs of values)
+    values = data["Values"]
+    
+    # Split the values into two lists
+    value_1 = [v[4] for v in values]
+    value_2 = [v[5] for v in values]
+    
+    # Add parameter values to collections
+    for dummy1, dummy2 in zip(value_1, value_2):
+        pareto_sensfunc1.append(dummy1)
+        pareto_sensfunc2.append(dummy2)
+    
+    # Create a 2D plot
+    plt.figure()
+    plt.scatter(value_1, value_2)
+    plt.xlabel(label1)
+    plt.ylabel(label2)
+    plt.grid(True)
+    plt.title(f'Pruned MOSA Pareto Sensitivities - Run No. {run + 1}')
+    plt.savefig(f'data/pruned_pareto_sensitivities_run_{run + 1}.png', dpi=300)
+    plt.close()
+    
+    # -------------- PART 2g: STORE AND PLOT CORRESPONDING POINTS IN PARAMETER SPACE --------------
+    
+    # Extract parameter values from the solutions
+    rS1_values = [solution["rS1"] for solution in data["Solution"]]
+    kS1_values = [solution["kS1"] for solution in data["Solution"]]
+    kS2_values = [solution["kS2"] for solution in data["Solution"]]
+    kP_values = [solution["kP"] for solution in data["Solution"]]
+    kE1_values = [solution["kE1"] for solution in data["Solution"]]
+    kE2_values = [solution["kE2"] for solution in data["Solution"]]
+    alphaE_values = [solution["alphaE"] for solution in data["Solution"]]
+    gammaE_values = [solution["gammaE"] for solution in data["Solution"]]
+    
+    # Add parameter values to collections
+    for dummy1, dummy2, dummy3, dummy4, dummy5, dummy6, dummy7, dummy8 in zip(rS1_values, kS1_values, kS2_values, kP_values, kE1_values, kE2_values, alphaE_values, gammaE_values):
+        pareto_rS1.append(dummy1)
+        pareto_kS1.append(dummy2)
+        pareto_kS2.append(dummy3)
+        pareto_kP.append(dummy4)
+        pareto_kE1.append(dummy5)
+        pareto_kE2.append(dummy6)
+        pareto_alphaE.append(dummy7)
+        pareto_gammaE.append(dummy8)
+        
+    # Create a figure with 8 1D scatter plots
+    
+    params = {
+        "rS1": annealed_rS1,
+        "kS1": annealed_kS1,
+        "kS2": annealed_kS2,
+        "kP": annealed_kP,
+        "kE1": annealed_kE1,
+        "kE2": annealed_kE2,
+        "alphaE": annealed_alphaE,
+        "gammaE": annealed_gammaE,
+    }
+    
+    fig, axes = plt.subplots(len(params), 1, figsize=(8, 12), sharex=False)
+    
+    for i, (param_name, values) in enumerate(params.items()):
+        axes[i].scatter(values, [i] * len(values), alpha=0.6)
+        axes[i].set_ylabel(param_name)
+        axes[i].set_yticks([i])
+        axes[i].set_yticklabels([param_name])
+    
+    plt.xlabel("Parameter Values")
+    plt.title(f'Pruned MOSA Pareto Parameters - Run No. {run + 1}')
+    fig.savefig(f'data/pruned_pareto_parameters_run_{run + 1}.png', dpi=300)
+    plt.tight_layout()
+    plt.close()
+    
+    # -------------- PART 2h: SAVE PARETO DATA FROM CURRENT RUN --------------
+    
+    # Save sensitivity function 1 pareto values
+    filename = f"pareto_sensfunc1_run{run+1}.npy"
+    np.save(f'data/{filename}',pareto_sensfunc1)
+    # Save sensitivity function 2 pareto values
+    filename = f"pareto_sensfunc2_run{run+1}.npy"
+    np.save(f'data/{filename}',pareto_sensfunc2)
+    # Save rS1 pareto values
+    filename = f"pareto_rS1_run{run+1}.npy"
+    np.save(f'data/{filename}',pareto_rS1)
+    # Save kS1 pareto values
+    filename = f"kS1_values_run{run+1}.npy"
+    np.save(f'data/{filename}',pareto_kS1)
+    # Save kS2 pareto values
+    filename = f"kS2_values_run{run+1}.npy"
+    np.save(f'data/{filename}',pareto_kS2)
+    # Save kP pareto values
+    filename = f"kP_values_run{run+1}.npy"
+    np.save(f'data/{filename}',pareto_kP)
+    # Save kE1 pareto values
+    filename = f"kE1_values_run{run+1}.npy"
+    np.save(f'data/{filename}',pareto_kE1)
+    # Save kE2 pareto values
+    filename = f"kE2_values_run{run+1}.npy"
+    np.save(f'data/{filename}',pareto_kE2)
+    # Save alphaE pareto values
+    filename = f"alphaE_values_run{run+1}.npy"
+    np.save(f'data/{filename}',pareto_alphaE)
+    # Save gammaE pareto values
+    filename = f"gammaE_values_run{run+1}.npy"
+    np.save(f'data/{filename}',pareto_gammaE)
+    
+    # ---------------- PART 2i: SAVE MOSA DATA --------------------------------
+    
+    mosa_data = pd.DataFrame({
+        'Circuit': [circuit],
+        'Steady state': [numss],
+        'Runs': [runs],
+        'Random walks per run': [iterations],
+        'rS1 (min, max, samples)': [[rS1_min, rS1_max, rS1_sampsize]],
+        'kS1 (min, max, samples)': [[kS1_min, kS1_max, kS1_sampsize]],
+        'kS2 (min, max, samples)': [[kS2_min, kS2_max, kS2_sampsize]],
+        'kP (min, max, samples)': [[kP_min, kP_max, kP_sampsize]],
+        'kE1 (min, max, samples)': [[kE1_min, kE1_max, kE1_sampsize]],
+        'kE2 (min, max, samples)': [[kE2_min, kE2_max, kE2_sampsize]],
+        'alphaE (min, max, samples)': [[alphaE_min, alphaE_max, alphaE_sampsize]],
+        'gammaE (min, max, samples)': [[gammaE_min, gammaE_max, gammaE_sampsize]],
+        f'(min, max) sampled value of S2ss_prime': [[S2ss_prime_samps_min, S2ss_prime_samps_max]],
+        f'(min, max) sampled value of Pss_prime': [[Pss_prime_samps_min, Pss_prime_samps_max]],
+        f'(min, max) sampled value of ATPss_prime': [[ATPss_prime_samps_min, ATPss_prime_samps_max]],
+        f'(min, max) sampled value of Ess_prime': [[Ess_prime_samps_min, Ess_prime_samps_max]],
+        f'(min, max) sampled value of {label1}': [[sens1_samps_min, sens1_samps_max]],
+        f'(min, max) sampled value of {label2}': [[sens2_samps_min, sens2_samps_max]],
+        f'Sampled energy difference in deltaE_S2ss': [deltaE_S2ss_prime],
+        f'Sampled energy difference in deltaE_Pss': [deltaE_Pss_prime],
+        f'Sampled energy difference in deltaE_ATPss': [deltaE_ATPss_prime],
+        f'Sampled energy difference in deltaE_Ess': [deltaE_Ess_prime],
+        f'Sampled energy difference in {label1}': [deltaE_sens1],
+        f'Sampled energy difference in {label2}': [deltaE_sens2],
+        'Sampled cumulative energ difference': [deltaE],
+        'Probability hot run': [probability_hot],
+        'Hot run temperature': [temp_hot],
+        'Probability cold run': [probability_cold],
+        'Cold run temperature': [temp_cold],
+        'Hot run time': [hotrun_time],
+        'Hot run stopping temperature': [hotrun_stoptemp],
+        'Number of temperatures': [temp_num],
+        'Step scaling factor': [step_scale],
+        'Cold run time': [coldrun_time],
+        'Cold run stopping temperature': [coldrun_stoptemp],
+        'Prune time': [prune_time],
+        'Archive length after cold run': [archive_cold_len],
+        'Archive length after prune': [archive_prune_len]
+    })
+
+file_exists = os.path.exists(output_file)
+mosa_data.to_csv(output_file, mode='a', index=False, header=not file_exists)
+
+print(f"Appended new data to {output_file}")
 
     
     # -------------- UP TO HERE-------------------- UP TO HERE-------------------- UP TO HERE-------------------- UP TO HERE---------------------
