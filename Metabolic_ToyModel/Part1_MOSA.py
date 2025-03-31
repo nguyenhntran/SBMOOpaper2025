@@ -210,8 +210,8 @@ def fobj(solution):
     theta1_val = solution["theta1"]
     theta2_val = solution["theta2"]
     
-    print("params")
-    print([k1_val, k2_val, theta1_val, theta2_val])
+#    print("params")
+#    print([k1_val, k2_val, theta1_val, theta2_val])
 
     # Find steady states and store.
     x0ss_val, x1ss_val, e1ss_val, e2ss_val = ssfinder(k1_val, k2_val, theta1_val, theta2_val)
@@ -379,7 +379,7 @@ print(deltaE)
 # Get hot temperature
 print("Now setting up hot run...")
 probability_hot = float(0.9)
-temp_hot = deltaE / np.log(1/probability_hot)
+temp_hot = 400000
 print("temp_hot")
 print(temp_hot)
 
