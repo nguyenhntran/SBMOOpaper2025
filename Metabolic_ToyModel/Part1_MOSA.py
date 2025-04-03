@@ -97,8 +97,8 @@ Only 0 and 1 are available now.
 """)
 
 # Choose pair of functions
-choice1 = int(input("Please select first option number:"))
-choice2 = int(input("Please select second option number:"))
+choice1 = int(0)
+choice2 = int(1)
 
 # List of sensitivity function names
 sensitivity_labels = [
@@ -205,13 +205,13 @@ def senpair(x0ss_val, x1ss_val, e1ss_val, e2ss_val, k1_val, k2_val, theta1_val, 
 def fobj(solution):
 	
 	# Update parameter set
-    k1_val = solution["k1"]
-    k2_val = solution["k2"]
-    theta1_val = solution["theta1"]
-    theta2_val = solution["theta2"]
+    k1_val = 10**(solution["k1"])
+    k2_val = 10**(solution["k2"])
+    theta1_val = 10**(solution["theta1"])
+    theta2_val = 10**(solution["theta2"])
     
-#    print("params")
-#    print([k1_val, k2_val, theta1_val, theta2_val])
+    # Check parameters
+    print("params", [k1_val, k2_val, theta1_val, theta2_val])
 
     # Find steady states and store.
     x0ss_val, x1ss_val, e1ss_val, e2ss_val = ssfinder(k1_val, k2_val, theta1_val, theta2_val)
@@ -231,26 +231,10 @@ def fobj(solution):
     k_cat = 12
     k_m = 10
     
-    # Known steady state 
-    steady_state = np.array([x0ss_val, x1ss_val, e1ss_val, e2ss_val])
-    
-    # Tolerance for closeness to steady state
-#    tol = 1e-4
-    
-    # Event function to stop integration
-#    def steady_state_event(t, y, params):
-#        diff = y - steady_state
-#        if np.linalg.norm(diff) <= tol:
-#            return 0
-#        return 1
-    
-#    steady_state_event.terminal = True  # stop the integration
-#    steady_state_event.direction = -1   # only trigger when getting close
-    
     # Initial conditions
     y0 = [2290,0,0,0]
     params = [k1_val, k2_val, theta1_val, theta2_val]
-    t_max = 5e5 
+    t_max = 5e4 
     t_eval = np.linspace(0, t_max)
     
     # Run the integration
@@ -260,43 +244,24 @@ def fobj(solution):
         y0=y0,
         method='RK23',
         t_eval=t_eval,
-#        events=lambda t, y: steady_state_event(t, y, params),
         rtol=1e-8,
         atol=1e-10,
-        dense_output=True
-    )
+        dense_output=True)
     
     t_used = sol.t
     x1_vals = sol.y[1]  # x1(t)
     e2_vals = sol.y[3]  # e2(t)
-                    
-#    # Truncate solution at steady state time (if event was triggered)
-#    if sol.t_events[0].size > 0:
-#        T = sol.t_events[0][0] # time when steady state is reached
-#        idx_T = np.searchsorted(sol.t, T)
-#        t_used = sol.t[:idx_T + 1]
-#        x1_vals = sol.y[1, :idx_T + 1]
-#        e2_vals = sol.y[3, :idx_T + 1]
-#    else:
-#        print("Warning: Steady state not reached.")
-#        t_used = sol.t
-#        x1_vals = sol.y[1]
-#        e2_vals = sol.y[3]
 
     # Compute integrand at each time point
     integrand_vals = np.abs(V_in - e2_vals * (k_cat * x1_vals) / (k_m + x1_vals))
     
     # Compute the integral numerically using trap rule
     integral_val = np.trapz(integrand_vals, t_used)
+
+    integral_val_rescaled = integral_val / 10000
     
-    print(f"Integral up to steady state: {integral_val:.6f}")          
-                    
-#    # Extract time when steady state was reached
-#    if sol.t[-1].size > 0:
-#        time_to_ss = sol.t[-1][0]
-#        print(f"Time to reach steady state: {time_to_ss:.4f}")
-#    else:
-#        print("Steady state not reached within time window.")    
+    print(f"Integral up to steady state: {integral_val_rescaled:.6f}")          
+
     
     #-------------------------------------------
     
@@ -304,7 +269,8 @@ def fobj(solution):
     # Check for NaN values before returning
     if np.isnan(ans1) or np.isnan(ans2):
         return np.inf, np.inf, np.inf
-    return ans1, ans2, integral_val
+    return ans1, ans2, integral_val_rescaled
+
 
 
 # -------------- PART 1: GAUGING MOSA PARAMETERS --------------
@@ -313,25 +279,25 @@ def fobj(solution):
 # Sample rS1 values
 k1_min = 0.0000001
 k1_max = 0.001
-k1_sampsize = 5
+k1_sampsize = 6
 k1_samps = np.linspace(k1_min, k1_max, k1_sampsize)
 
 # Sample kS1 values
 k2_min = 0.0000001
 k2_max = 0.001
-k2_sampsize = 5
+k2_sampsize = 6
 k2_samps = np.linspace(k2_min, k2_max, k2_sampsize)
 
 # Sample kS2 values
 theta1_min = 0.001
 theta1_max = 10
-theta1_sampsize = 5
+theta1_sampsize = 6
 theta1_samps = np.linspace(theta1_min, theta1_max, theta1_sampsize)
 
 # Sample kP values
 theta2_min = 0.001
 theta2_max = 10
-theta2_sampsize = 5
+theta2_sampsize = 6
 theta2_samps = np.linspace(theta2_min, theta2_max, theta2_sampsize)
 
 
@@ -368,18 +334,20 @@ sens2_samps_min = np.nanmin(sens2_samps)
 sens1_samps_max = np.nanmax(sens1_samps)
 sens2_samps_max = np.nanmax(sens2_samps)
 
+# Check values
+print("Sensitivity ranges: ", sens1_samps_min, sens2_samps_min, sens1_samps_max, sens2_samps_max)
+
 # Get MOSA energies
 deltaE_sens1 = abs(sens1_samps_max - sens1_samps_min)
 deltaE_sens2 = abs(sens2_samps_max - sens2_samps_min)
 deltaE = np.linalg.norm([deltaE_sens1, deltaE_sens2])
-print("deltaE")
-print(deltaE)
+print("deltaE: ", deltaE)
 
 
 # Get hot temperature
 print("Now setting up hot run...")
 probability_hot = float(0.9)
-temp_hot = 400000
+temp_hot = deltaE / np.log(1/probability_hot) #50 
 print("temp_hot")
 print(temp_hot)
 
@@ -397,13 +365,14 @@ print(temp_cold)
 
 # Print prompts
 print("Now preparing to MOSA...")
-runs = int(2)
-iterations = int(100)
+runs = int(input("Please enter number of MOSA runs you would like to complete (if in doubt enter 5): "))
+iterations = int(input("Please enter number of random walks per run (if in doubt enter 100): "))
 
 hotrun_time = []
 hotrun_stoptemp = []
 temp_num = []
-step_scale = []
+step_scale_hot = []
+step_scale_cold = []
 coldrun_time = []
 coldrun_stoptemp = []
 prune_time = []
@@ -417,6 +386,7 @@ for run in range(runs):
     # Define lists to collect sensitivity and parameter values from each MOSA run before pruning
     annealed_sensfunc1 = []
     annealed_sensfunc2 = []
+    annealed_J = []
     annealed_k1        = []
     annealed_k2        = []
     annealed_theta1    = []
@@ -425,6 +395,7 @@ for run in range(runs):
     # Define lists to collect sensitivity and parameter values from each MOSA run after pruning
     pareto_sensfunc1 = []
     pareto_sensfunc2 = []
+    pareto_J = []
     pareto_k1        = []
     pareto_k2        = []
     pareto_theta1    = []
@@ -448,7 +419,7 @@ for run in range(runs):
     opt = mosa.Anneal()
     opt.archive_size = 10000
     opt.maximum_archive_rejections = opt.archive_size
-    opt.population = {"k1": (k1_min, k1_max),"k2": (k2_min, k2_max),"theta1": (theta1_min, theta1_max), "theta2": (theta2_min, theta2_max)}
+    opt.population = {"k1": (np.log10(k1_min), np.log10(k1_max)),"k2": (np.log10(k2_min), np.log10(k2_max)),"theta1": (np.log10(theta1_min), np.log10(theta1_max)), "theta2": (np.log10(theta2_min), np.log10(theta2_max))}
     
     # Hot run options
     opt.initial_temperature = temp_hot
@@ -456,8 +427,8 @@ for run in range(runs):
     opt.temperature_decrease_factor = 0.95
     opt.number_of_temperatures = int(np.ceil(np.log(temp_cold / temp_hot) / np.log(opt.temperature_decrease_factor)))
     opt.number_of_solution_elements = {"k1": 1,"k2": 1,"theta1": 1, "theta2": 1}
-    step_scaling = 1/opt.number_of_iterations
-    opt.mc_step_size = {"k1": abs(k1_min - k1_max)*step_scaling,"k2": abs(k2_min - k2_max)*step_scaling,"theta1": abs(theta1_min - theta1_max)*step_scaling, "theta2": abs(theta2_min - theta2_max)*step_scaling}
+    scale = 0.7
+    opt.mc_step_size = {"k1": abs(np.log10(k1_min) - np.log10(k1_max))*scale,"k2": abs(np.log10(k2_min) - np.log10(k2_max))*scale,"theta1": abs(np.log10(theta1_min) - np.log10(theta1_max))*scale, "theta2": abs(np.log10(theta2_min) - np.log10(theta2_max))*scale}
 	
 	# Hot run
     start_time = time.time()
@@ -467,17 +438,17 @@ for run in range(runs):
     hotrun_time.append(time.time() - start_time)
     hotrun_stoptemp.append(hotrun_stoppingtemp)
     temp_num.append(opt.number_of_temperatures)
-    step_scale.append(step_scaling)
+    step_scale_hot.append(scale)
     
     # Cold run options
     opt.initial_temperature = hotrun_stoppingtemp
     opt.number_of_iterations = iterations
     opt.number_of_temperatures = 100
-    opt.temperature_decrease_factor = 0.9
+    opt.temperature_decrease_factor = 0.93
     opt.number_of_solution_elements = {"rS1": 1,"rS2": 1,"rS3": 1, "kS1": 1, "kS2": 1, "kP": 1, "kE1": 1, "kE2": 1, "alphaE": 1, "gammaE": 1}
-    step_scaling = 1/opt.number_of_iterations / 10
-    opt.mc_step_size = {"k1": abs(k1_min - k1_max)*step_scaling,"k2": abs(k2_min - k2_max)*step_scaling,"theta1": abs(theta1_min - theta1_max)*step_scaling, "theta2": abs(theta2_min - theta2_max)*step_scaling}
-
+    scale = 0.3
+    opt.mc_step_size = {"k1": abs(np.log10(k1_min) - np.log10(k1_max))*scale,"k2": abs(np.log10(k2_min) - np.log10(k2_max))*scale,"theta1": abs(np.log10(theta1_min) - np.log10(theta1_max))*scale, "theta2": abs(np.log10(theta2_min) - np.log10(theta2_max))*scale}
+	
     # Cold run
     start_time = time.time()
     coldrun_stoppingtemp = opt.evolve(fobj)
@@ -485,6 +456,7 @@ for run in range(runs):
     # Record stats
     coldrun_time.append(time.time() - start_time)
     coldrun_stoptemp.append(coldrun_stoppingtemp)
+    step_scale_cold.append(scale)
     
     # Pruning 
     start_time = time.time()
@@ -511,11 +483,13 @@ for run in range(runs):
     # Split the values into two lists
     value_1 = [v[0] for v in values]
     value_2 = [v[1] for v in values]
+    value_3 = [v[2] for v in values]
     
     # Add parameter values to collections
-    for dummy1, dummy2 in zip(value_1, value_2):
+    for dummy1, dummy2, dummy3 in zip(value_1, value_2, value_3):
         annealed_sensfunc1.append(dummy1)
         annealed_sensfunc2.append(dummy2)
+        annealed_J.append(dummy3)
     
     # Create a 2D plot
     plt.figure()
@@ -572,6 +546,9 @@ for run in range(runs):
     # Save sensitivity function 2 annealed values
     filename = f"annealed_sensfunc2_run{run+1}.npy"
     np.save(f'data/{filename}',annealed_sensfunc2)
+    # Save J annealed values
+    filename = f"annealed_J_run{run+1}.npy"
+    np.save(f'data/{filename}',annealed_J)
     # Save k1 annealed values
     filename = f"annealed_k1_run{run+1}.npy"
     np.save(f'data/{filename}',annealed_k1)
@@ -598,14 +575,18 @@ for run in range(runs):
     # Extract the "Values" coordinates (pairs of values)
     values = data["Values"]
     
+    
     # Split the values into two lists
     value_1 = [v[0] for v in values]
     value_2 = [v[1] for v in values]
+    value_3 = [v[2] for v in values]
     
     # Add parameter values to collections
-    for dummy1, dummy2 in zip(value_1, value_2):
+    for dummy1, dummy2, dummy3 in zip(value_1, value_2, value_3):
         pareto_sensfunc1.append(dummy1)
         pareto_sensfunc2.append(dummy2)
+        pareto_J.append(dummy3)
+
     
     # Create a 2D plot
     plt.figure()
@@ -661,6 +642,9 @@ for run in range(runs):
     # Save sensitivity function 2 pareto values
     filename = f"pareto_sensfunc2_run{run+1}.npy"
     np.save(f'data/{filename}',pareto_sensfunc2)
+    # Save J pareto values
+    filename = f"pareto_J_run{run+1}.npy"
+    np.save(f'data/{filename}',pareto_J)
     # Save k1 pareto values
     filename = f"pareto_k1_run{run+1}.npy"
     np.save(f'data/{filename}',pareto_k1)
@@ -696,7 +680,8 @@ for run in range(runs):
         'Hot run time': [hotrun_time],
         'Hot run stopping temperature': [hotrun_stoptemp],
         'Number of temperatures': [temp_num],
-        'Step scaling factor': [step_scale],
+        'Step scaling factor in hot run': [step_scale_hot],
+        'Step scaling factor in cold run': [step_scale_cold],
         'Cold run time': [coldrun_time],
         'Cold run stopping temperature': [coldrun_stoptemp],
         'Prune time': [prune_time],

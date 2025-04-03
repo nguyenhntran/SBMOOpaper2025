@@ -70,7 +70,7 @@ def S_k1_x1_analytic(x0, x1, e1, e2, k1, k2, theta1, theta2):
     denom = factor1 * factor2
 
     sensitivity = num / denom
-    return abs(sensitivity)
+    return np.log10(abs(sensitivity))
 
 
 def S_k2_x1_analytic(x0, x1, e1, e2, k1, k2, theta1, theta2):
@@ -101,7 +101,8 @@ def S_k2_x1_analytic(x0, x1, e1, e2, k1, k2, theta1, theta2):
     denom = x1 * (term1 + term2 + term3 + term4 + term5 + term6)
     
     sensitivity = num / denom
-    return abs(sensitivity)
+    return np.log10(abs(sensitivity))
+
 
 #---------------------------------------------------------------------------------------------------
 
